@@ -5,7 +5,7 @@
   <source srcset="/assets/banner.webp" type="image/webp">
   <img src="/assets/banner.webp" 
        alt="ChipGPT — Эволюционный AI-дизайн процессорных архитектур" 
-       width="1200" height="400"
+       width="1082" height="604"
        loading="eager" 
        fetchpriority="high"
        decoding="async"
