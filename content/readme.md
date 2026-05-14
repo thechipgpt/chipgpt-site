@@ -1,31 +1,24 @@
 
 # 🧠 ChipGPT: Эволюционный AI-дизайн процессорных архитектур
 
-![Evolutionary Chip Design Banner](../assets/banner.png)
+<picture>
+  <source srcset="../assets/banner.webp" type="image/webp">
+  <img src="../assets/banner.webp" 
+       alt="ChipGPT — Эволюционный AI-дизайн процессорных архитектур" 
+       width="1200" height="400"
+       loading="eager" 
+       fetchpriority="high"
+       decoding="async"
+       style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+</picture>
 
 > Автоматизированный переход от базовых коммерческих ядер (VLIW/RISC-V) к сложным GPU/TPU-ускорителям через замкнутый цикл HW/SW ко-эволюции с математически гарантированной корректностью.
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-green.svg)](https://www.python.org/downloads/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
-[![Docs](https://img.shields.io/badge/docs-GitHub_Pages-brightgreen)](https://your-org.github.io/chipgpt/)
+[![Docs](https://img.shields.io/badge/docs-GitHub_Pages-brightgreen)](https://thechipgpt.github.io/chipgpt/)
 
-<details>
-<summary>📖 Содержание</summary>
-
-- [1. 🎯 Постановка задачи](#1-постановка-задачи)
-- [2. 📐 Архитектура системы](#2-архитектура-системы)
-- [3. 🧬 Эпохи эволюции процессорных ядер](#3-эпохи-эволюции-процессорных-ядер)
-- [4. 📊 MERASIC: Система бенчмарков и само-оценки](#4-merasic-система-бенчмарков-и-само-оценки)
-- [5. ⚙️ ISS: Ядро системы эволюции](#5-iss-ядро-системы-эволюции)
-- [6. 🧱 Базовые процессорные ядра](#6-базовые-процессорные-ядра)
-- [7. 🤖 GRPO обучение](#7-grpo-обучение)
-- [8. 📚 RAG помощники](#8-rag-помощники)
-  - [8.1 RAG как источник контекста](#81-rag-как-источник-контекста)
-  - [8.2 RAG как оценщик кода](#82-rag-как-оценщик-кода)
-- [9. 🕳️ Агентный подход к генерации](#9-агентный-подход-к-генерации)
-- [🚀 Quick Start](#quick-start)
-</details>
 
 ## 1. 🎯 Постановка задачи
 
@@ -188,7 +181,7 @@ RAG (Retrieval-Augmented Generation) выполняет роль **контек�
 
 ```bash
 # 1. Клонирование
-git clone https://github.com/your-org/chipgpt.git && cd chipgpt
+git clone https://github.com/thechipgpt/chipgpt.git && cd chipgpt
 
 # 2. Зависимости (Python + C++)
 pip install -r requirements.txt
