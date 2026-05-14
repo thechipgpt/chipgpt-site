@@ -2,8 +2,8 @@
 # 🧠 ChipGPT: Эволюционный AI-дизайн процессорных архитектур
 
 <picture>
-  <source srcset="../assets/banner.webp" type="image/webp">
-  <img src="../assets/banner.webp" 
+  <source srcset="/assets/banner.webp" type="image/webp">
+  <img src="/assets/banner.webp" 
        alt="ChipGPT — Эволюционный AI-дизайн процессорных архитектур" 
        width="1200" height="400"
        loading="eager" 
