@@ -10,6 +10,9 @@
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
 - [Агентное проектирование: ADL + LLM + EA](index.html#/wiki/agent-pipeline)
 
+## 🔍 Симуляция и оптимизация PPA
+- [Многоуровневая симуляция для GRPO: Интеграция ISS и RTL](index.html#/wiki/simulation/grpo-multi-level-ppa-reward)
+
 ## ⚙️ Платформы и реализации
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
 
