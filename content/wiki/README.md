@@ -11,7 +11,9 @@
 - [Агентное проектирование: ADL + LLM + EA](index.html#/wiki/agent-pipeline)
 
 ## 🔍 Симуляция и оптимизация PPA
+- [Декларативный ISS: Основа AI-эволюции процессоров](index.html#/wiki/simulation/iss-declarative-architecture-grpo)
 - [Многоуровневая симуляция для GRPO: Интеграция ISS и RTL](index.html#/wiki/simulation/grpo-multi-level-ppa-reward)
+- [Многоядерный ISS: Глобальный GRPO для GPU-эмуляции](index.html#/wiki/simulation/multicore-iss-event-driven-grpo)
 
 ## ⚙️ Платформы и реализации
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
