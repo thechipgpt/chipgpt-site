@@ -15,7 +15,9 @@
 - [Многоуровневая симуляция для GRPO: Интеграция ISS и RTL](index.html#/wiki/simulation/grpo-multi-level-ppa-reward)
 - [Многоядерный ISS: Глобальный GRPO для GPU-эмуляции](index.html#/wiki/simulation/multicore-iss-event-driven-grpo)
 
+## 📊 MERASIC: Бенчмарки и система верификации
+- [MERASIC: Методология гибридной верификации RTL на базе Renode Co-Simulation](index.html#/wiki/merasic/renode-vliw-cosimulation-rtl-verification)
+
 ## ⚙️ Платформы и реализации
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
 
-<!-- Новые статьи добавляйте сюда по мере появления -->
