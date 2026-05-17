@@ -6,6 +6,7 @@
 - [Парадигма эволюционного дизайна чипов](index.html#/wiki/evolutionary-paradigm)
 - [DSE vs Evolution: Сравнительный анализ](index.html#/wiki/dse-vs-evolution)
 - [Эволюция VLIW → SIMT и план перехода к GPU](index.html#/wiki/architecture/vliw-to-simt-evolution)
+- [Эволюция VLIW → TPU и план перехода к тензорным ядрам](index.html#/wiki/architecture/vliw-to-tpu-evolution)
 
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
