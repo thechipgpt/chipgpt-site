@@ -23,4 +23,4 @@
 ## ⚙️ Платформы и реализации
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
 - [Отладка eSW в Renode: интеграция VLIW и GRPO-петля](index.html#/wiki/debugging/renode-vliw-grpo)
-
+- [VLIWGPT ISS: Детерминированная симуляция конвейера Эпохи 1](index.html#/wiki/simulation/vliwgpt-iss-epoch1-pipeline)
