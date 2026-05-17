@@ -5,6 +5,7 @@
 ## 🔬 Концепция и парадигма
 - [Парадигма эволюционного дизайна чипов](index.html#/wiki/evolutionary-paradigm)
 - [DSE vs Evolution: Сравнительный анализ](index.html#/wiki/dse-vs-evolution)
+- [Эволюция VLIW → SIMT и план перехода к GPU](index.html#/wiki/architecture/vliw-to-simt-evolution)
 
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
@@ -20,4 +21,5 @@
 
 ## ⚙️ Платформы и реализации
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
+- [Отладка eSW в Renode: интеграция VLIW и GRPO-петля](index.html#/wiki/debugging/renode-vliw-grpo)
 
