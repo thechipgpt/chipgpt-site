@@ -15,6 +15,9 @@
 ## 🛠 Адаптация компилятора и тулчейна
 - [Гибридная адаптация LLVM-бэкенда под VLIW](index.html#/wiki/compiler/llvm-vliw-hybrid-evolution)
 
+## 🌐 Инфраструктура eSW и многоуровневый IR
+- [Генерация MLIR-слоя и эволюция eSW для VLIW](index.html#/wiki/compiler/mlir-vliw-ir-generation)
+
 ## 🔍 Симуляция и оптимизация PPA
 - [Декларативный ISS: Основа AI-эволюции процессоров](index.html#/wiki/simulation/iss-declarative-architecture-grpo)
 - [Многоуровневая симуляция для GRPO: Интеграция ISS и RTL](index.html#/wiki/simulation/grpo-multi-level-ppa-reward)
