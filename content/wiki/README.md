@@ -12,6 +12,9 @@
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
 - [Агентное проектирование: ADL + LLM + EA](index.html#/wiki/agent-pipeline)
 
+## 🛠 Адаптация компилятора и тулчейна
+- [Гибридная адаптация LLVM-бэкенда под VLIW](index.html#/wiki/compiler/llvm-vliw-hybrid-evolution)
+
 ## 🔍 Симуляция и оптимизация PPA
 - [Декларативный ISS: Основа AI-эволюции процессоров](index.html#/wiki/simulation/iss-declarative-architecture-grpo)
 - [Многоуровневая симуляция для GRPO: Интеграция ISS и RTL](index.html#/wiki/simulation/grpo-multi-level-ppa-reward)
