@@ -21,6 +21,7 @@
 
 ## 🔍 Симуляция и оптимизация PPA
 - [Декларативный ISS: Основа AI-эволюции процессоров](index.html#/wiki/simulation/iss-declarative-architecture-grpo)
+- [⚡ Параметрическая энергомодель VLIW для GRPO](index.html#/wiki/simulation/vliw-energy-model-grpo)
 - [Многоуровневая симуляция для GRPO: Интеграция ISS и RTL](index.html#/wiki/simulation/grpo-multi-level-ppa-reward)
 - [Многоядерный ISS: Глобальный GRPO для GPU-эмуляции](index.html#/wiki/simulation/multicore-iss-event-driven-grpo)
 
