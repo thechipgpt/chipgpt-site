@@ -8,6 +8,7 @@
 - [Эволюция VLIW → SIMT и план перехода к GPU](index.html#/wiki/architecture/vliw-to-simt-evolution)
 - [Эволюция VLIW → TPU и план перехода к тензорным ядрам](index.html#/wiki/architecture/vliw-to-tpu-evolution)
 - [⚡ Практика ChipGPT: оптимизация CNN и механизмов внимания](index.html#/wiki/examples/optimizing-vliw-instructions-evolution)
+- [Эволюция Warp Scheduler: От VLIW к интеллектуальному SIMT](index.html#/wiki/evolution/vliw-to-warp-scheduler)
 
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
