@@ -5,10 +5,13 @@
 ## 🔬 Концепция и парадигма
 - [Парадигма эволюционного дизайна чипов](index.html#/wiki/evolutionary-paradigm)
 - [DSE vs Evolution: Сравнительный анализ](index.html#/wiki/dse-vs-evolution)
-- [Эволюция VLIW → SIMT и план перехода к GPU](index.html#/wiki/architecture/vliw-to-simt-evolution)
-- [Эволюция VLIW → TPU и план перехода к тензорным ядрам](index.html#/wiki/architecture/vliw-to-tpu-evolution)
+- [🔄 Эволюция VLIW → Groq: Dataflow, SRAM и детерминированный TSP](index.html#/wiki/evolution/vliw-to-groq-dataflow-tsp)
+- [🔄 Эволюция VLIW → SIMT и план перехода к GPU](index.html#/wiki/architecture/vliw-to-simt-evolution)
+- [🔄 Эволюция Warp Scheduler: От VLIW к интеллектуальному SIMT](index.html#/wiki/evolution/vliw-to-warp-scheduler)
+- [🔄 Эволюция VLIW → TPU и план перехода к тензорным ядрам](index.html#/wiki/architecture/vliw-to-tpu-evolution)
+- [🔄 Эволюция VLIW → MPPA: Архитектурный подход Kalray и массово-параллельные DPU](index.html#/wiki/evolution/vliw-to-mppa-kalray-evolution)
 - [⚡ Практика ChipGPT: оптимизация CNN и механизмов внимания](index.html#/wiki/examples/optimizing-vliw-instructions-evolution)
-- [Эволюция Warp Scheduler: От VLIW к интеллектуальному SIMT](index.html#/wiki/evolution/vliw-to-warp-scheduler)
+- [Архитектура](index.html#/wiki/architecture/arch-tmp)
 
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
