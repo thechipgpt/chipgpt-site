@@ -10,7 +10,8 @@
 - [🔄 Эволюция Warp Scheduler: От VLIW к интеллектуальному SIMT](index.html#/wiki/evolution/vliw-to-warp-scheduler)
 - [🔄 Эволюция VLIW → TPU и план перехода к тензорным ядрам](index.html#/wiki/architecture/vliw-to-tpu-evolution)
 - [🔄 Эволюция VLIW → MPPA: Архитектурный подход Kalray и массово-параллельные DPU](index.html#/wiki/evolution/vliw-to-mppa-kalray-evolution)
-- [⚡ Практика ChipGPT: оптимизация CNN и механизмов внимания](index.html#/wiki/examples/optimizing-vliw-instructions-evolution)
+- [⚡ Практика ChipGPT: Оптимизация CNN и механизмов внимания](index.html#/wiki/examples/optimizing-vliw-instructions-evolution)
+- [⚡ Практика ChipGPT: KV Cache-Ускоритель. Гибридный сопроцессор и расширение ISA](index.html#/wiki/examples/vliw-to-kv-cache-accelerator-isa)
 
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
