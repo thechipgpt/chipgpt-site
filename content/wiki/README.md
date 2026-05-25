@@ -11,7 +11,6 @@
 - [🔄 Эволюция VLIW → TPU и план перехода к тензорным ядрам](index.html#/wiki/architecture/vliw-to-tpu-evolution)
 - [🔄 Эволюция VLIW → MPPA: Архитектурный подход Kalray и массово-параллельные DPU](index.html#/wiki/evolution/vliw-to-mppa-kalray-evolution)
 - [⚡ Практика ChipGPT: оптимизация CNN и механизмов внимания](index.html#/wiki/examples/optimizing-vliw-instructions-evolution)
-- [Архитектура](index.html#/wiki/architecture/arch-tmp)
 
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
