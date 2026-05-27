@@ -17,6 +17,9 @@
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
 - [Агентное проектирование: ADL + LLM + EA](index.html#/wiki/agent-pipeline)
 
+## 🔄 Стратегия ко-эволюции SW: Компилятор, ISA и GRPO
+- [🤖 Автогенерация ассемблера VLIWGPT и GRPO-супероптимизация](index.html#/wiki/sw-evolution/llm-grpo-vliwgpt-assembly)
+
 ## 🛠 Адаптация компилятора и тулчейна
 - [Гибридная адаптация LLVM-бэкенда под VLIW](index.html#/wiki/compiler/llvm-vliw-hybrid-evolution)
 
