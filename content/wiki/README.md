@@ -17,6 +17,9 @@
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
 - [Агентное проектирование: ADL + LLM + EA](index.html#/wiki/agent-pipeline)
 
+## 🧬 Алгоритмы эволюции
+- [AlphaEvolve × ChipGPT: Автономный поиск архитектур от VLIW к TPU/GPU](index.html#/wiki/evolution-algorithms/alphaevolve-chipgpt-integration-roadmap)
+
 ## 🔄 Стратегия ко-эволюции SW: Компилятор, ISA и GRPO
 - [🤖 Автогенерация ассемблера VLIWGPT и GRPO-супероптимизация](index.html#/wiki/sw-evolution/llm-grpo-vliwgpt-assembly)
 
