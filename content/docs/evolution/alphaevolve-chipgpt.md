@@ -16,7 +16,7 @@ tags: [evolution, alphaevolve, iss, dse, vliw, gpu, tpu, grpo]
 
 | Домен | Параметры (Knobs) | Влияние на метрики |
 |-------|-------------------|-------------------|
-| **Pipeline & Execution** | `issue_width` (1–8)<br>`pipeline_depth` (3–7)<br>`fu_types_per_slot`<br>`fu_latency`, `fu_ii`<br>`branch_prediction`<br>`speculation_buffer_depth` | IPC, CPI, штрафы за mispredict, конвейерные простои |
+| **Pipeline & Execution** | `issue_width` (1–8)<br>`pipeline_depth` (3–7)<br>`fu_types_per_slot`<br>`fu_latency`, `fu_ii`<br>`branch_prediction`<br>`speculation_buffer_depth` | Пропускная способность (IPC), задержки исполнения (CPI), штрафы за неверное предсказание ветвлений, простои конвейера |
 | **Clustering & Interconnect** | `num_clusters` (1–8)<br>`max_fu_per_cluster`<br>`cluster_topology`<br>`cross_cluster_bus_width`<br>`arbitration_policy`<br>`scratchpad_size` | Масштабируемость, межкластерный трафик, clock skew, granularity power gating |
 | **Register File & Data Path** | `rf_size_per_cluster` (32–128)<br>`rf_read/write_ports`<br>`rf_banking_strategy`<br>`bypass_mux_delay`<br>`register_renaming_depth`<br>`immediate_field_width` | Register pressure, congestion портов, dynamic power, критический путь |
 | **ISA & Encoding** | `vliw_bundle_size_bits`<br>`slot_encoding_density`<br>`opcode_space_allocation`<br>`macro_op_fusion_enable`<br>`vector_lane_count`<br>`data_type_support` | Size кода, fetch bandwidth, гибкость расписания компилятора |
