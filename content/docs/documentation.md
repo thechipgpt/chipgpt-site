@@ -7,5 +7,8 @@
 ## 🤖 Agentic EDA & ChipGPT Agents
 - [GigaCore Agent: GigaDB — универсальный ADL-движок для генерации мульти-ISA ядер](index.html#/docs/agents/gigacore-gigadb-adl)
 
+## 🧬 Алгоритмы эволюции
+- [AlphaEvolve × ChipGPT: Параметры эволюционного поиска](index.html#/docs/evolution/alphaevolve-chipgpt)
+
 ## ⚡ Design Flow: Low-Power & PPA Optimization
 - [🔋 Low-Power VLIW Clusters: AI-оптимизация тактовых доменов и PPA](index.html#/docs/low-power/vliw-ai-clock-domains)
