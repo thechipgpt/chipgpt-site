@@ -37,6 +37,7 @@
 
 ## 📊 MERASIC: Бенчмарки и система верификации
 - [MERASIC: Методология гибридной верификации RTL на базе Renode Co-Simulation](index.html#/wiki/merasic/renode-vliw-cosimulation-rtl-verification)
+- [⚡ MERASIC Genesys-Pro: Интеллектуальная верификация чипов](index.html#/wiki/merasic/merasic-genesys-pro-hybrid-verification)
 
 ## ⚙️ Платформы и реализации
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
