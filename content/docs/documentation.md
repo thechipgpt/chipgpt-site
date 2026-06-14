@@ -5,6 +5,7 @@
 - [Архитектура VLIWGPT: Параметризуемое VLIW-ядро с динамической конфигурацией](index.html#/docs/architecture/vliwgpt-parametric-core)
 - [🌐 ChipGPT MPPA: Детерминированная матрица от VLIW к Manycore-платформе](index.html#/docs/architecture/vliwgpt-to-mppa-matrix)
 ## 🧩 Функциональные и вычислительные блоки VLIWGPT
+- [**[Эпоха II] VLIWGPT-SIMD**: Архитектура Эпохи II](index.html#/docs/blocks/epoch-2-simd-vliw)
 - [⚡ AI-Ready FPU: от CGPE-эмуляции к FP4/FP6 тензорам](index.html#/docs/blocks/fpu-evolution-cgpe-to-fp4)
 
 ## 🤖 Agentic EDA & ChipGPT Agents
