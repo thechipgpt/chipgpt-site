@@ -1,5 +1,3 @@
----
-
 # 🧬 Эволюция VLIWGPT: Векторно-тензорный ускоритель для AI и H.264
 
 > **Статус**: Active Development | **Эпоха**: III → IV | **Обновлено**: 2026-06-10  
@@ -268,7 +266,21 @@ VLIW-архитектуры критически чувствительны к �
 
 Данная архитектура является естественным продолжением эволюционной цепочки ChipGPT:
 
-
+```mermaid
+flowchart TD
+E1["Epoch I: Basic VLIW"] --> E2["Epoch II: SIMD-VLIW"]
+E2 --> E3["Epoch III: Vector-Tensor VLIW"]
+E3 --> E4["Epoch IV: GPGPU/TPU Dataflow"]
+ADL["ADL-Agent
+Формальная спецификация"] --> E3
+LLM["LLM+EA-Agent
+Поиск топологии PE/RF"] --> E3
+E3 --> MERASIC["MERASIC Benchmarks"]
+MERASIC --> GRPO["GRPO Policy Update
+Reward: IPC, GOPS/W, Coverage"]
+GRPO --> LLM
+style E3 fill:#f59e0b,stroke:#d97706,stroke-width:3px,color:#fff
+```
 
 **Критерии перехода к Эпохе III:**
 - Функциональная корректность >99.99% на MERASIC (H.264 macroblock, INT8 GEMM)
