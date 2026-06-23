@@ -8,6 +8,9 @@
 - [**[Эпоха II] VLIWGPT-SIMD**: Архитектура Эпохи II](index.html#/docs/blocks/epoch-2-simd-vliw)
 - [⚡ AI-Ready FPU: от CGPE-эмуляции к FP4/FP6 тензорам](index.html#/docs/blocks/fpu-evolution-cgpe-to-fp4)
 
+## 🏗️ Реализация ядра VLIWGPT
+- [Механика латентности инструкций VLIWGPT](index.html#/docs/vliwgpt/vliwgpt-latency-model)
+
 ## 🤖 Agentic EDA & ChipGPT Agents
 - [GigaCore Agent: GigaDB — универсальный ADL-движок для генерации мульти-ISA ядер](index.html#/docs/agents/gigacore-gigadb-adl)
 
@@ -16,3 +19,7 @@
 
 ## ⚡ Design Flow: Low-Power & PPA Optimization
 - [🔋 Low-Power VLIW Clusters: AI-оптимизация тактовых доменов и PPA](index.html#/docs/low-power/vliw-ai-clock-domains)
+
+<!--
+8
+-->
