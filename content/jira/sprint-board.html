@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChipGPT Sprint Board</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --col-bg: #ebecf0;
+      --card-bg: #ffffff;
+      --text: #172b4d;
+      --text-muted: #6b778c;
+      --accent: #0052cc;
+      --success: #00875a;
+      --warning: #ff991f;
+      --danger: #de350b;
+      --shadow: 0 1px 3px rgba(0,0,0,0.12);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      padding-top: 70px;
+    }
+    
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #1a1a2e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .logo a {
+      color: #fff;
+      text-decoration: none;
+    }
+    .nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-link {
+      color: #c8d0e0;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+    .nav-link.external::after {
+      content: " ↗";
+      font-size: 12px;
+    }
+    .nav-link.active {
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .badge {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      background: #e3fcef;
+      color: #006644;
+      font-weight: 500;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .column {
+      background: var(--col-bg);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 300px;
+    }
+    .col-header {
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #c4c8d1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .count {
+      background: #dfe1e6;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .task {
+      background: var(--card-bg);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .task:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .task-id {
+      color: var(--text-muted);
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+    .task-title {
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    .task-meta-mini {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 4px 0 8px 0;
+      font-size: 11px;
+    }
+    .sprint-badge {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+    .due-date {
+      color: #6b778c;
+      font-size: 10px;
+    }
+    .due-date.overdue {
+      color: #de350b;
+      font-weight: 600;
+    }
+    .due-date.soon {
+      color: #ff991f;
+      font-weight: 500;
+    }
+    .tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #dfe1e6;
+      color: var(--text-muted);
+    }
+    .tag.hw { background: #e3fcef; color: #006644; }
+    .tag.sw { background: #deebff; color: #0052cc; }
+    .tag.infra { background: #fff0e6; color: #bf2600; }
+    .tag.epoch1 { background: #eae6ff; color: #403294; }
+    .tag.epoch2 { background: #fffaf0; color: #ff8b00; }
+    .assignee {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #c4c8d1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    @media (max-width: 900px) {
+      .board {
+        grid-template-columns: 1fr;
+      }
+      .column {
+        min-height: auto;
+        margin-bottom: 16px;
+      }
+      .site-header {
+        padding: 0 15px;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 60px;
+        gap: 10px;
+      }
+      .nav {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-link {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+      body {
+        padding-top: 100px;
+      }
+      .page-container {
+        padding: 12px;
+      }
+    }
+    @media (max-width: 600px) {
+      .site-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 15px;
+      }
+      .logo {
+        text-align: center;
+      }
+      .nav {
+        justify-content: center;
+      }
+      body {
+        padding-top: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo"><a href="/">🔳 ChipGPT</a></div>
+    <nav class="nav">
+      <a href="/" class="nav-link">Главная</a>
+      <a href="/#/docs/roadmap" class="nav-link">Roadmap</a>
+      <a href="/#/wiki/README" class="nav-link">Wiki</a>
+      <a href="/#/docs/documentation" class="nav-link">Docs</a>
+      <a href="/content/jira/sprint-board.html" class="nav-link active">Jira</a>      
+      <a href="https://github.com/thechipgpt/" target="_blank" class="nav-link external">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <div class="page-container">
+    <div class="page-header">
+      <h1>🚀 ChipGPT Sprint Board</h1>
+      <span class="badge">Q3 2026 — Q1 2027</span>
+    </div>
+
+    <div class="board">
+      <!-- BACKLOG -->
+      <div class="column">
+        <div class="col-header">🗃️ Backlog <span class="count">5</span></div>
+        
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-104'">
+          <div class="task-id">CHIP-104</div>
+          <div class="task-title">Подготовка спецификации Warp Scheduler для Эпохи III</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 5</span>
+            <span class="due-date">📅 2026-02-15</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag epoch2">Epoch III</span></div>
+          <div class="assignee">AI</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-108'">
+          <div class="task-id">CHIP-108</div>
+          <div class="task-title">Исследование интеграции HBM-интерфейса (Эпоха IV)</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 6</span>
+            <span class="due-date">📅 2026-03-01</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag infra">Infra</span></div>
+          <div class="assignee">DS</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-112'">
+          <div class="task-id">CHIP-112</div>
+          <div class="task-title">Бенчмарки TPU/Tensor Cores для RAG-обучения</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 6</span>
+            <span class="due-date">📅 2026-03-15</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag infra">Infra</span></div>
+          <div class="assignee">ML</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-115'">
+          <div class="task-id">CHIP-115</div>
+          <div class="task-title">Дизайн пайплайна CI/CD для мульти-FPGA деплоя</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 7</span>
+            <span class="due-date">📅 2026-04-01</span>
+          </div>
+          <div class="tags"><span class="tag infra">Infra</span><span class="tag epoch2">Epoch IV</span></div>
+          <div class="assignee">OP</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-120'">
+          <div class="task-id">CHIP-120</div>
+          <div class="task-title">Разработка нового кэш-контроллера для Эпохи III</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 5</span>
+            <span class="due-date">📅 2026-02-28</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag epoch2">Epoch III</span></div>
+          <div class="assignee">HW2</div>
+        </div>
+      </div>
+
+      <!-- TO DO -->
+      <div class="column">
+        <div class="col-header">📋 To Do <span class="count">5</span></div>
+        
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-98'">
+          <div class="task-id">CHIP-98</div>
+          <div class="task-title">Реализация векторных расширений SIMD-VLIW</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 4</span>
+            <span class="due-date">📅 2026-02-20</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag epoch1">Epoch II</span></div>
+          <div class="assignee">HW1</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-101'">
+          <div class="task-id">CHIP-101</div>
+          <div class="task-title">Авто-векторизация в LLVM-бэкенде</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 4</span>
+            <span class="due-date">📅 2026-02-25</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag epoch1">Epoch II</span></div>
+          <div class="assignee">SW2</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-103'">
+          <div class="task-id">CHIP-103</div>
+          <div class="task-title">Интеграция GRPO-трейнера с MERASIC v2</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 5</span>
+            <span class="due-date">📅 2026-03-10</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag infra">Infra</span></div>
+          <div class="assignee">ML</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-106'">
+          <div class="task-id">CHIP-106</div>
+          <div class="task-title">Формальная верификация переходов между эпохами</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 5</span>
+            <span class="due-date">📅 2026-03-20</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag sw">SW</span></div>
+          <div class="assignee">VE</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-109'">
+          <div class="task-id">CHIP-109</div>
+          <div class="task-title">Публикация сравнительного анализа VLIWGPT vs ST231</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 5</span>
+            <span class="due-date">📅 2026-03-15</span>
+          </div>
+          <div class="tags"><span class="tag infra">Infra</span><span class="tag epoch1">Epoch II</span></div>
+          <div class="assignee">PM</div>
+        </div>
+      </div>
+
+      <!-- IN PROGRESS -->
+      <div class="column">
+        <div class="col-header">🔨 In Progress <span class="count">5</span></div>
+        
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-85'">
+          <div class="task-id">CHIP-85</div>
+          <div class="task-title">Настройка DSP-библиотеки для Эпохи II</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 3</span>
+            <span class="due-date">📅 2026-02-05</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag epoch1">Epoch II</span></div>
+          <div class="assignee">SW1</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-88'">
+          <div class="task-id">CHIP-88</div>
+          <div class="task-title">Поточная симуляция ISS ↔ RTL Co-Sim</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 3</span>
+            <span class="due-date">📅 2026-02-10</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag hw">HW</span></div>
+          <div class="assignee">VE</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-91'">
+          <div class="task-id">CHIP-91</div>
+          <div class="task-title">Оптимизация регистрового файла под предикаты</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 3</span>
+            <span class="due-date">📅 2026-02-08</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag epoch1">Epoch II</span></div>
+          <div class="assignee">HW2</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-94'">
+          <div class="task-id">CHIP-94</div>
+          <div class="task-title">Интеграция OpenCL-like API для runtime-планировщика</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 4</span>
+            <span class="due-date">📅 2026-02-28</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag epoch2">Epoch III</span></div>
+          <div class="assignee">SW3</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-125'">
+          <div class="task-id">CHIP-125</div>
+          <div class="task-title">Оптимизация компилятора для VLIW-архитектуры</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 4</span>
+            <span class="due-date">📅 2026-02-10</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag epoch1">Epoch II</span></div>
+          <div class="assignee">SW1</div>
+        </div>
+      </div>
+
+      <!-- REVIEW -->
+      <div class="column">
+        <div class="col-header">👁️ Review / Testing <span class="count">3</span></div>
+        
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-76'">
+          <div class="task-id">CHIP-76</div>
+          <div class="task-title">Финальная документация toolchain Эпохи I</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 2</span>
+            <span class="due-date">📅 2026-01-25</span>
+          </div>
+          <div class="tags"><span class="tag infra">Infra</span><span class="tag epoch1">Epoch I</span></div>
+          <div class="assignee">DO</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-79'">
+          <div class="task-id">CHIP-79</div>
+          <div class="task-title">Проверка покрытия MERASIC v1 на >99.99%</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 2</span>
+            <span class="due-date">📅 2026-01-30</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag hw">HW</span></div>
+          <div class="assignee">VE</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-82'">
+          <div class="task-id">CHIP-82</div>
+          <div class="task-title">Smoke-тесты ассемблера и линкера ST231-compat</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 2</span>
+            <span class="due-date">📅 2026-02-01</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag infra">Infra</span></div>
+          <div class="assignee">QA</div>
+        </div>
+      </div>
+
+      <!-- DONE -->
+      <div class="column">
+        <div class="col-header">✅ Done <span class="count">6</span></div>
+        
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-60'">
+          <div class="task-id">CHIP-60</div>
+          <div class="task-title">Базовое VLIW-ядро (r-VEX seed)</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 1</span>
+            <span class="due-date">✅ 2026-01-10</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag epoch1">Epoch I</span></div>
+          <div class="assignee">HW1</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-62'">
+          <div class="task-id">CHIP-62</div>
+          <div class="task-title">Статический планировщик инструкций</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 1</span>
+            <span class="due-date">✅ 2026-01-12</span>
+          </div>
+          <div class="tags"><span class="tag hw">HW</span><span class="tag epoch1">Epoch I</span></div>
+          <div class="assignee">HW2</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-64'">
+          <div class="task-id">CHIP-64</div>
+          <div class="task-title">LLVM/GCC бэкенд + базовые библиотеки C/C++</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 1</span>
+            <span class="due-date">✅ 2026-01-15</span>
+          </div>
+          <div class="tags"><span class="tag sw">SW</span><span class="tag epoch1">Epoch I</span></div>
+          <div class="assignee">SW1</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-67'">
+          <div class="task-id">CHIP-67</div>
+          <div class="task-title">Публикация репозитория под Apache 2.0</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 1</span>
+            <span class="due-date">✅ 2026-01-18</span>
+          </div>
+          <div class="tags"><span class="tag infra">Infra</span><span class="tag epoch1">Epoch I</span></div>
+          <div class="assignee">PM</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-70'">
+          <div class="task-id">CHIP-70</div>
+          <div class="task-title">Настройка CI/CD пайплайна (регрессия + линтинг)</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 2</span>
+            <span class="due-date">✅ 2026-01-20</span>
+          </div>
+          <div class="tags"><span class="tag infra">Infra</span></div>
+          <div class="assignee">OP</div>
+        </div>
+
+        <div class="task" onclick="location.href='task-detail.html?id=CHIP-73'">
+          <div class="task-id">CHIP-73</div>
+          <div class="task-title">Исходная документация ISA и микроархитектуры</div>
+          <div class="task-meta-mini">
+            <span class="sprint-badge">🏃 Sprint 2</span>
+            <span class="due-date">✅ 2026-01-22</span>
+          </div>
+          <div class="tags"><span class="tag infra">Infra</span><span class="tag epoch1">Epoch I</span></div>
+          <div class="assignee">DO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

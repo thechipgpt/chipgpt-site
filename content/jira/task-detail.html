@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChipGPT - Task Details</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f4f5f7;
+      color: #172b4d;
+      line-height: 1.6;
+      padding-top: 70px;
+    }
+    
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #1a1a2e;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .logo a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-link {
+      color: #c8d0e0;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+    .nav-link.external::after {
+      content: " ↗";
+      font-size: 12px;
+    }
+    .nav-link.active {
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #0052cc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .task-detail {
+      background: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #ebecf0;
+    }
+
+    .task-id-badge {
+      font-size: 14px;
+      color: #6b778c;
+      font-weight: 600;
+    }
+
+    .task-status {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-backlog { background: #dfe1e6; color: #42526e; }
+    .status-todo { background: #deebff; color: #0052cc; }
+    .status-progress { background: #fff0e6; color: #bf2600; }
+    .status-review { background: #eae6ff; color: #403294; }
+    .status-done { background: #e3fcef; color: #006644; }
+
+    .task-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 16px 0;
+    }
+
+    /* ОБНОВЛЕННЫЙ БЛОК МЕТА-ИНФОРМАЦИИ */
+    .task-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px 30px;
+      margin: 16px 0;
+      padding: 16px 20px;
+      background: #f4f5f7;
+      border-radius: 6px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      padding: 2px 0;
+      flex-wrap: wrap;
+    }
+
+    .meta-label {
+      color: #6b778c;
+      font-weight: 500;
+      white-space: nowrap;
+      min-width: 90px;
+    }
+
+    .meta-value {
+      font-weight: 500;
+      word-break: break-word;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .meta-value-sub {
+      font-weight: 400;
+      color: #6b778c;
+      font-size: 13px;
+    }
+
+    .meta-value.overdue {
+      color: #de350b;
+    }
+    .meta-value.soon {
+      color: #ff991f;
+    }
+    .meta-value.done-date {
+      color: #00875a;
+    }
+
+    @media (max-width: 600px) {
+      .task-meta {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 16px;
+      }
+      .meta-label {
+        min-width: 70px;
+      }
+    }
+
+    .task-description {
+      margin: 24px 0;
+    }
+    .task-description h3 {
+      margin-bottom: 8px;
+      color: #172b4d;
+    }
+    .task-description p {
+      color: #42526e;
+    }
+
+    .task-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 3px;
+      background: #dfe1e6;
+      color: #42526e;
+    }
+    .tag.hw { background: #e3fcef; color: #006644; }
+    .tag.sw { background: #deebff; color: #0052cc; }
+    .tag.infra { background: #fff0e6; color: #bf2600; }
+    .tag.epoch1 { background: #eae6ff; color: #403294; }
+    .tag.epoch2 { background: #fffaf0; color: #ff8b00; }
+
+    .subtasks {
+      margin: 24px 0;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .subtasks h3 {
+      margin-bottom: 12px;
+    }
+    .subtask-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid #ebecf0;
+    }
+    .subtask-item:last-child {
+      border-bottom: none;
+    }
+    .subtask-check {
+      width: 18px;
+      height: 18px;
+      accent-color: #0052cc;
+    }
+    .subtask-label {
+      font-size: 14px;
+    }
+    .subtask-done {
+      text-decoration: line-through;
+      color: #6b778c;
+    }
+
+    .comments {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #ebecf0;
+    }
+    .comments h3 {
+      margin-bottom: 16px;
+    }
+    .comment {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #0052cc;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .comment-content {
+      flex: 1;
+    }
+    .comment-author {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .comment-date {
+      color: #6b778c;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    .comment-text {
+      margin-top: 4px;
+      font-size: 14px;
+      color: #42526e;
+    }
+
+    .task-actions {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+    }
+    .btn-primary {
+      background: #0052cc;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #003d99;
+    }
+    .btn-secondary {
+      background: #ebecf0;
+      color: #172b4d;
+    }
+    .btn-secondary:hover {
+      background: #dfe1e6;
+    }
+    .btn-success {
+      background: #00875a;
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: #006644;
+    }
+    .btn-danger {
+      background: #de350b;
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background: #bf2600;
+    }
+
+    @media (max-width: 768px) {
+      .site-header {
+        padding: 0 15px;
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 60px;
+        gap: 10px;
+      }
+      .nav {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-link {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+      body {
+        padding-top: 100px;
+      }
+      .task-detail {
+        padding: 20px;
+      }
+      .task-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo"><a href="/">🔳 ChipGPT</a></div>
+    <nav class="nav">
+      <a href="/" class="nav-link">Главная</a>
+      <a href="/#/docs/roadmap" class="nav-link">Roadmap</a>
+      <a href="/#/wiki/README" class="nav-link">Wiki</a>
+      <a href="/#/docs/documentation" class="nav-link">Docs</a>
+      <a href="/content/jira/sprint-board.html" class="nav-link active">Jira</a>      
+      <a href="https://github.com/thechipgpt/" target="_blank" class="nav-link external">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <div class="container" id="taskContainer">
+    <!-- Контент будет загружен динамически -->
+  </div>
+
+  <script>
+    // База данных задач
+    const tasksData = {
+      'CHIP-104': {
+        id: 'CHIP-104',
+        title: 'Подготовка спецификации Warp Scheduler для Эпохи III',
+        status: 'backlog',
+        statusLabel: 'Backlog',
+        assignee: 'AI',
+        assigneeName: 'AI Architect',
+        priority: 'High',
+        epoch: 'Epoch III',
+        sprint: 'Sprint 5',
+        created: '2026-01-10',
+        dueDate: '2026-02-15',
+        updated: '2026-01-28',
+        description: 'Разработать полную спецификацию Warp Scheduler для Эпохи III, включая:\n• Архитектуру планировщика\n• Интерфейсы с другими блоками\n• Протоколы синхронизации\n• Метрики производительности',
+        tags: ['HW', 'Epoch III'],
+        subtasks: [
+          { id: 1, text: 'Анализ требований к планировщику', done: true },
+          { id: 2, text: 'Проектирование архитектуры', done: true },
+          { id: 3, text: 'Написание спецификации', done: false },
+          { id: 4, text: 'Рецензия и утверждение', done: false }
+        ],
+        comments: [
+          { author: 'AI', date: '2026-01-15', text: 'Начал работу над архитектурой' },
+          { author: 'DS', date: '2026-01-20', text: 'Нужно учесть интеграцию с HBM' }
+        ]
+      },
+      'CHIP-108': {
+        id: 'CHIP-108',
+        title: 'Исследование интеграции HBM-интерфейса (Эпоха IV)',
+        status: 'backlog',
+        statusLabel: 'Backlog',
+        assignee: 'DS',
+        assigneeName: 'Design Specialist',
+        priority: 'Medium',
+        epoch: 'Epoch IV',
+        sprint: 'Sprint 6',
+        created: '2026-01-18',
+        dueDate: '2026-03-01',
+        updated: '2026-01-20',
+        description: 'Исследовать возможности интеграции HBM-интерфейса для Эпохи IV. Оценить:\n• Пропускную способность\n• Задержки\n• Потребление энергии\n• Совместимость с текущей архитектурой',
+        tags: ['HW', 'Infra'],
+        subtasks: [
+          { id: 1, text: 'Обзор HBM-спецификаций', done: true },
+          { id: 2, text: 'Анализ совместимости', done: false },
+          { id: 3, text: 'Оценка производительности', done: false }
+        ],
+        comments: [
+          { author: 'DS', date: '2026-01-18', text: 'Начал изучение документации HBM' }
+        ]
+      },
+      'CHIP-112': {
+        id: 'CHIP-112',
+        title: 'Бенчмарки TPU/Tensor Cores для RAG-обучения',
+        status: 'backlog',
+        statusLabel: 'Backlog',
+        assignee: 'ML',
+        assigneeName: 'ML Engineer',
+        priority: 'High',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 6',
+        created: '2026-01-20',
+        dueDate: '2026-03-15',
+        updated: '2026-01-25',
+        description: 'Провести бенчмарки TPU и Tensor Cores для оптимизации RAG-обучения. Сравнить:\n• Скорость обучения\n• Эффективность использования памяти\n• Масштабируемость',
+        tags: ['SW', 'Infra'],
+        subtasks: [
+          { id: 1, text: 'Настройка окружения для бенчмарков', done: true },
+          { id: 2, text: 'Запуск тестов', done: false },
+          { id: 3, text: 'Анализ результатов', done: false }
+        ],
+        comments: []
+      },
+      'CHIP-115': {
+        id: 'CHIP-115',
+        title: 'Дизайн пайплайна CI/CD для мульти-FPGA деплоя',
+        status: 'backlog',
+        statusLabel: 'Backlog',
+        assignee: 'OP',
+        assigneeName: 'DevOps Engineer',
+        priority: 'Medium',
+        epoch: 'Epoch IV',
+        sprint: 'Sprint 7',
+        created: '2026-01-25',
+        dueDate: '2026-04-01',
+        updated: '2026-01-28',
+        description: 'Разработать CI/CD пайплайн для автоматического деплоя на множество FPGA. Включить:\n• Автоматическую сборку\n• Тестирование\n• Развертывание\n• Мониторинг',
+        tags: ['Infra'],
+        subtasks: [
+          { id: 1, text: 'Анализ требований к CI/CD', done: true },
+          { id: 2, text: 'Проектирование архитектуры', done: false },
+          { id: 3, text: 'Реализация прототипа', done: false }
+        ],
+        comments: []
+      },
+      'CHIP-120': {
+        id: 'CHIP-120',
+        title: 'Разработка нового кэш-контроллера для Эпохи III',
+        status: 'todo',
+        statusLabel: 'To Do',
+        assignee: 'HW2',
+        assigneeName: 'Hardware Engineer 2',
+        priority: 'High',
+        epoch: 'Epoch III',
+        sprint: 'Sprint 5',
+        created: '2026-01-25',
+        dueDate: '2026-02-28',
+        updated: '2026-01-28',
+        description: 'Спроектировать и реализовать кэш-контроллер L2 с поддержкой:\n• Адаптивной политики кэширования\n• Предвыборки данных\n• Согласованности с L1\n• Энергоэффективности',
+        tags: ['HW', 'Epoch III'],
+        subtasks: [
+          { id: 1, text: 'Анализ требований к кэш-контроллеру', done: true },
+          { id: 2, text: 'Проектирование архитектуры', done: true },
+          { id: 3, text: 'Реализация RTL-кода', done: false },
+          { id: 4, text: 'Верификация и тестирование', done: false },
+          { id: 5, text: 'Интеграция с системой', done: false }
+        ],
+        comments: [
+          { author: 'HW2', date: '2026-01-25', text: 'Начал проектирование архитектуры' },
+          { author: 'Arch', date: '2026-01-28', text: 'Нужно учесть совместимость с Warp Scheduler' }
+        ]
+      },
+      'CHIP-125': {
+        id: 'CHIP-125',
+        title: 'Оптимизация компилятора для VLIW-архитектуры',
+        status: 'progress',
+        statusLabel: 'In Progress',
+        assignee: 'SW1',
+        assigneeName: 'Software Engineer 1',
+        priority: 'Critical',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 4',
+        created: '2026-01-20',
+        dueDate: '2026-02-10',
+        updated: '2026-01-28',
+        description: 'Улучшить оптимизации компилятора LLVM для VLIW:\n• Распараллеливание на уровне инструкций\n• Оптимизация использования регистров\n• Улучшенный планировщик\n• Поддержка новых инструкций',
+        tags: ['SW', 'Epoch II'],
+        subtasks: [
+          { id: 1, text: 'Анализ текущих оптимизаций', done: true },
+          { id: 2, text: 'Разработка новых проходов оптимизации', done: false },
+          { id: 3, text: 'Тестирование производительности', done: false }
+        ],
+        comments: [
+          { author: 'SW1', date: '2026-01-20', text: 'Завершил анализ, начинаю реализацию' }
+        ]
+      },
+      'CHIP-98': {
+        id: 'CHIP-98',
+        title: 'Реализация векторных расширений SIMD-VLIW',
+        status: 'todo',
+        statusLabel: 'To Do',
+        assignee: 'HW1',
+        assigneeName: 'Hardware Engineer 1',
+        priority: 'High',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 4',
+        created: '2026-01-15',
+        dueDate: '2026-02-20',
+        updated: '2026-01-25',
+        description: 'Реализовать векторные расширения для VLIW-архитектуры:\n• SIMD-инструкции\n• Векторные регистры\n• Аппаратная поддержка\n• Оптимизация производительности',
+        tags: ['HW', 'Epoch II'],
+        subtasks: [
+          { id: 1, text: 'Проектирование векторных расширений', done: true },
+          { id: 2, text: 'Реализация RTL-кода', done: false },
+          { id: 3, text: 'Тестирование и верификация', done: false }
+        ],
+        comments: [
+          { author: 'HW1', date: '2026-01-16', text: 'Начал проектирование' },
+          { author: 'Arch', date: '2026-01-20', text: 'Нужно учесть совместимость с LLVM' }
+        ]
+      },
+      'CHIP-101': {
+        id: 'CHIP-101',
+        title: 'Авто-векторизация в LLVM-бэкенде',
+        status: 'todo',
+        statusLabel: 'To Do',
+        assignee: 'SW2',
+        assigneeName: 'Software Engineer 2',
+        priority: 'Medium',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 4',
+        created: '2026-01-16',
+        dueDate: '2026-02-25',
+        updated: '2026-01-24',
+        description: 'Реализовать авто-векторизацию в LLVM-бэкенде для автоматического использования SIMD-инструкций.',
+        tags: ['SW', 'Epoch II'],
+        subtasks: [
+          { id: 1, text: 'Анализ текущего LLVM-бэкенда', done: true },
+          { id: 2, text: 'Реализация авто-векторизации', done: false },
+          { id: 3, text: 'Тестирование производительности', done: false }
+        ],
+        comments: [
+          { author: 'SW2', date: '2026-01-18', text: 'Начал анализ' }
+        ]
+      },
+      'CHIP-103': {
+        id: 'CHIP-103',
+        title: 'Интеграция GRPO-трейнера с MERASIC v2',
+        status: 'todo',
+        statusLabel: 'To Do',
+        assignee: 'ML',
+        assigneeName: 'ML Engineer',
+        priority: 'High',
+        epoch: 'Epoch III',
+        sprint: 'Sprint 5',
+        created: '2026-01-20',
+        dueDate: '2026-03-10',
+        updated: '2026-01-27',
+        description: 'Интегрировать GRPO-трейнер с MERASIC v2 для оптимизации обучения на основе обратной связи.',
+        tags: ['SW', 'Infra'],
+        subtasks: [
+          { id: 1, text: 'Анализ GRPO-алгоритма', done: true },
+          { id: 2, text: 'Интеграция с MERASIC v2', done: false },
+          { id: 3, text: 'Тестирование и валидация', done: false }
+        ],
+        comments: []
+      },
+      'CHIP-106': {
+        id: 'CHIP-106',
+        title: 'Формальная верификация переходов между эпохами',
+        status: 'todo',
+        statusLabel: 'To Do',
+        assignee: 'VE',
+        assigneeName: 'Verification Engineer',
+        priority: 'Critical',
+        epoch: 'Epoch III',
+        sprint: 'Sprint 5',
+        created: '2026-01-22',
+        dueDate: '2026-03-20',
+        updated: '2026-01-28',
+        description: 'Провести формальную верификацию переходов между эпохами архитектуры для обеспечения корректности.',
+        tags: ['HW', 'SW'],
+        subtasks: [
+          { id: 1, text: 'Определение спецификаций переходов', done: true },
+          { id: 2, text: 'Разработка тестовых сценариев', done: false },
+          { id: 3, text: 'Запуск верификации', done: false }
+        ],
+        comments: []
+      },
+      'CHIP-109': {
+        id: 'CHIP-109',
+        title: 'Публикация сравнительного анализа VLIWGPT vs ST231',
+        status: 'todo',
+        statusLabel: 'To Do',
+        assignee: 'PM',
+        assigneeName: 'Project Manager',
+        priority: 'Medium',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 5',
+        created: '2026-01-24',
+        dueDate: '2026-03-15',
+        updated: '2026-01-28',
+        description: 'Подготовить и опубликовать сравнительный анализ производительности VLIWGPT vs ST231.',
+        tags: ['Infra', 'Epoch II'],
+        subtasks: [
+          { id: 1, text: 'Сбор данных производительности', done: true },
+          { id: 2, text: 'Написание статьи', done: false },
+          { id: 3, text: 'Публикация', done: false }
+        ],
+        comments: []
+      },
+      'CHIP-85': {
+        id: 'CHIP-85',
+        title: 'Настройка DSP-библиотеки для Эпохи II',
+        status: 'progress',
+        statusLabel: 'In Progress',
+        assignee: 'SW1',
+        assigneeName: 'Software Engineer 1',
+        priority: 'High',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 3',
+        created: '2026-01-10',
+        dueDate: '2026-02-05',
+        updated: '2026-01-28',
+        description: 'Настроить DSP-библиотеку для оптимальной работы на архитектуре Эпохи II.',
+        tags: ['SW', 'Epoch II'],
+        subtasks: [
+          { id: 1, text: 'Анализ DSP-алгоритмов', done: true },
+          { id: 2, text: 'Оптимизация для VLIW', done: true },
+          { id: 3, text: 'Тестирование производительности', done: false }
+        ],
+        comments: [
+          { author: 'SW1', date: '2026-01-12', text: 'Начал анализ' },
+          { author: 'SW1', date: '2026-01-20', text: 'Завершил оптимизацию' }
+        ]
+      },
+      'CHIP-88': {
+        id: 'CHIP-88',
+        title: 'Поточная симуляция ISS ↔ RTL Co-Sim',
+        status: 'progress',
+        statusLabel: 'In Progress',
+        assignee: 'VE',
+        assigneeName: 'Verification Engineer',
+        priority: 'High',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 3',
+        created: '2026-01-12',
+        dueDate: '2026-02-10',
+        updated: '2026-01-27',
+        description: 'Реализовать поточную симуляцию для совместной верификации ISS и RTL.',
+        tags: ['SW', 'HW'],
+        subtasks: [
+          { id: 1, text: 'Проектирование интерфейса', done: true },
+          { id: 2, text: 'Реализация Co-Sim', done: false },
+          { id: 3, text: 'Тестирование', done: false }
+        ],
+        comments: [
+          { author: 'VE', date: '2026-01-15', text: 'Начал проектирование' }
+        ]
+      },
+      'CHIP-91': {
+        id: 'CHIP-91',
+        title: 'Оптимизация регистрового файла под предикаты',
+        status: 'progress',
+        statusLabel: 'In Progress',
+        assignee: 'HW2',
+        assigneeName: 'Hardware Engineer 2',
+        priority: 'Medium',
+        epoch: 'Epoch II',
+        sprint: 'Sprint 3',
+        created: '2026-01-14',
+        dueDate: '2026-02-08',
+        updated: '2026-01-26',
+        description: 'Оптимизировать регистровый файл для эффективной работы с предикатами.',
+        tags: ['HW', 'Epoch II'],
+        subtasks: [
+          { id: 1, text: 'Анализ текущей реализации', done: true },
+          { id: 2, text: 'Разработка оптимизаций', done: false },
+          { id: 3, text: 'Верификация', done: false }
+        ],
+        comments: [
+          { author: 'HW2', date: '2026-01-16', text: 'Начал анализ' }
+        ]
+      },
+      'CHIP-94': {
+        id: 'CHIP-94',
+        title: 'Интеграция OpenCL-like API для runtime-планировщика',
+        status: 'progress',
+        statusLabel: 'In Progress',
+        assignee: 'SW3',
+        assigneeName: 'Software Engineer 3',
+        priority: 'High',
+        epoch: 'Epoch III',
+        sprint: 'Sprint 4',
+        created: '2026-01-18',
+        dueDate: '2026-02-28',
+        updated: '2026-01-28',
+        description: 'Разработать и интегрировать OpenCL-like API для runtime-планировщика Эпохи III.',
+        tags: ['SW', 'Epoch III'],
+        subtasks: [
+          { id: 1, text: 'Проектирование API', done: true },
+          { id: 2, text: 'Реализация', done: false },
+          { id: 3, text: 'Интеграция с планировщиком', done: false }
+        ],
+        comments: [
+          { author: 'SW3', date: '2026-01-20', text: 'Начал проектирование API' }
+        ]
+      }
+    };
+
+    // Получаем ID задачи из URL
+    function getTaskId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    // Функция для отображения статуса
+    function getStatusClass(status) {
+      const classes = {
+        'backlog': 'status-backlog',
+        'todo': 'status-todo',
+        'progress': 'status-progress',
+        'review': 'status-review',
+        'done': 'status-done'
+      };
+      return classes[status] || 'status-backlog';
+    }
+
+    // Функция для определения цвета дедлайна
+    function getDeadlineColor(dueDate, status) {
+      if (status === 'done') return 'done-date';
+      
+      const today = new Date();
+      const due = new Date(dueDate);
+      const diffTime = due - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 0) return 'overdue';
+      if (diffDays <= 3) return 'soon';
+      return '';
+    }
+
+    // Форматирование даты
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    // Рендеринг задачи
+    function renderTask(taskId) {
+      const container = document.getElementById('taskContainer');
+      const task = tasksData[taskId];
+
+      if (!task) {
+        container.innerHTML = `
+          <div class="task-detail" style="text-align:center;padding:60px 20px;">
+            <h2>❌ Задача не найдена</h2>
+            <p style="color:#6b778c;margin:16px 0;">Задача с ID "${taskId}" не существует</p>
+            <a href="/content/jira/sprint-board.html" class="btn btn-primary">Вернуться к доске</a>
+          </div>
+        `;
+        return;
+      }
+
+      const deadlineClass = getDeadlineColor(task.dueDate, task.status);
+      const formattedCreated = formatDate(task.created);
+      const formattedDue = formatDate(task.dueDate);
+      const formattedUpdated = formatDate(task.updated);
+
+      container.innerHTML = `
+        <a href="/content/jira/sprint-board.html" class="back-link">← Назад к доске</a>
+        
+        <div class="task-detail">
+          <div class="task-header">
+            <div>
+              <div class="task-id-badge">${task.id}</div>
+              <h1 class="task-title">${task.title}</h1>
+            </div>
+            <span class="task-status ${getStatusClass(task.status)}">${task.statusLabel}</span>
+          </div>
+
+          <div class="task-meta">
+            <div class="meta-item">
+              <span class="meta-label">👤 Исполнитель:</span>
+              <span class="meta-value">
+                <strong>${task.assignee}</strong>
+                <span class="meta-value-sub">(${task.assigneeName})</span>
+              </span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">⚡ Приоритет:</span>
+              <span class="meta-value">${task.priority}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">📅 Эпоха:</span>
+              <span class="meta-value">${task.epoch}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">🏃 Спринт:</span>
+              <span class="meta-value">${task.sprint}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">📆 Создана:</span>
+              <span class="meta-value">${formattedCreated}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">⏰ Дедлайн:</span>
+              <span class="meta-value ${deadlineClass}">${formattedDue}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">🔄 Обновлена:</span>
+              <span class="meta-value">${formattedUpdated}</span>
+            </div>
+          </div>
+
+          <div class="task-tags">
+            ${task.tags.map(tag => `<span class="tag ${tag.toLowerCase().replace(' ', '')}">${tag}</span>`).join('')}
+          </div>
+
+          <div class="task-description">
+            <h3>📝 Описание</h3>
+            <p>${task.description.replace(/\n/g, '<br>')}</p>
+          </div>
+
+          ${task.subtasks && task.subtasks.length > 0 ? `
+            <div class="subtasks">
+              <h3>📋 Подзадачи</h3>
+              ${task.subtasks.map(sub => `
+                <div class="subtask-item">
+                  <input type="checkbox" class="subtask-check" ${sub.done ? 'checked' : ''} disabled>
+                  <span class="subtask-label ${sub.done ? 'subtask-done' : ''}">${sub.text}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          ${task.comments && task.comments.length > 0 ? `
+            <div class="comments">
+              <h3>💬 Комментарии</h3>
+              ${task.comments.map(comment => `
+                <div class="comment">
+                  <div class="comment-avatar">${comment.author.charAt(0)}</div>
+                  <div class="comment-content">
+                    <div>
+                      <span class="comment-author">${comment.author}</span>
+                      <span class="comment-date">${formatDate(comment.date)}</span>
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="task-actions">
+            <button class="btn btn-success" onclick="alert('Задача ${task.id} отмечена как выполненная')">✅ Отметить как выполненную</button>
+            <button class="btn btn-secondary" onclick="alert('Редактирование задачи ${task.id}')">✏️ Редактировать</button>
+            <button class="btn btn-danger" onclick="if(confirm('Удалить задачу ${task.id}?')) alert('Задача удалена')">🗑️ Удалить</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Загрузка задачи при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      const taskId = getTaskId();
+      if (taskId) {
+        renderTask(taskId);
+      } else {
+        document.getElementById('taskContainer').innerHTML = `
+          <div class="task-detail" style="text-align:center;padding:60px 20px;">
+            <h2>⚠️ ID задачи не указан</h2>
+            <p style="color:#6b778c;margin:16px 0;">Пожалуйста, укажите ID задачи в URL</p>
+            <a href="/content/jira/sprint-board.html" class="btn btn-primary">Вернуться к доске</a>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
