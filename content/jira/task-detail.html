@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChipGPT - Task Details</title>
-  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -122,7 +122,6 @@
       margin: 16px 0;
     }
 
-    /* ОБНОВЛЕННЫЙ БЛОК МЕТА-ИНФОРМАЦИИ */
     .task-meta {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -369,17 +368,19 @@
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo"><a href="/">🔳 ChipGPT</a></div>
-    <nav class="nav">
-      <a href="/" class="nav-link">Главная</a>
-      <a href="/#/docs/roadmap" class="nav-link">Roadmap</a>
-      <a href="/#/wiki/README" class="nav-link">Wiki</a>
-      <a href="/#/docs/documentation" class="nav-link">Docs</a>
-      <a href="/content/jira/sprint-board.html" class="nav-link active">Jira</a>      
-      <a href="https://github.com/thechipgpt/" target="_blank" class="nav-link external">GitHub ↗</a>
-    </nav>
-  </header>
+
+<header class="site-header">
+  <div class="logo"><a href="../../index.html">🔳 ChipGPT</a></div>
+  <nav class="nav">
+    <a href="../../index.html" class="nav-link">Главная</a>
+    <a href="../../index.html#/docs/roadmap" class="nav-link">Roadmap</a>
+    <a href="../../index.html#/wiki/README" class="nav-link">Wiki</a>
+    <a href="../../index.html#/docs/documentation" class="nav-link">Docs</a>
+    <a href="sprint-board.html" class="nav-link active">Jira</a>      
+    <a href="https://github.com/thechipgpt/" target="_blank" class="nav-link external">GitHub ↗</a>
+  </nav>
+</header>
+
 
   <div class="container" id="taskContainer">
     <!-- Контент будет загружен динамически -->
@@ -799,7 +800,7 @@
           <div class="task-detail" style="text-align:center;padding:60px 20px;">
             <h2>❌ Задача не найдена</h2>
             <p style="color:#6b778c;margin:16px 0;">Задача с ID "${taskId}" не существует</p>
-            <a href="/content/jira/sprint-board.html" class="btn btn-primary">Вернуться к доске</a>
+            <a href="sprint-board.html" class="btn btn-primary">Вернуться к доске</a>
           </div>
         `;
         return;
@@ -811,7 +812,7 @@
       const formattedUpdated = formatDate(task.updated);
 
       container.innerHTML = `
-        <a href="/content/jira/sprint-board.html" class="back-link">← Назад к доске</a>
+        <a href="sprint-board.html" class="back-link">← Назад к доске</a>
         
         <div class="task-detail">
           <div class="task-header">
@@ -914,7 +915,7 @@
           <div class="task-detail" style="text-align:center;padding:60px 20px;">
             <h2>⚠️ ID задачи не указан</h2>
             <p style="color:#6b778c;margin:16px 0;">Пожалуйста, укажите ID задачи в URL</p>
-            <a href="/content/jira/sprint-board.html" class="btn btn-primary">Вернуться к доске</a>
+            <a href="sprint-board.html" class="btn btn-primary">Вернуться к доске</a>
           </div>
         `;
       }
