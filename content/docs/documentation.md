@@ -15,6 +15,7 @@
 
 ## 🤖 Agentic EDA & ChipGPT Agents
 - [⚡ **ChipGPT Agentic EDA: Архитектура, Агенты и MCP-Интеграция**](index.html#/docs/agentic-eda/architecture-mcp-integration)
+- [⚡ **ChipGPT Agentic Loop Engineering**: Архитектура замкнутого цикла и самоэволюции](index.html#/docs/agentic-eda/loop-engineering-architecture)
 - [GigaCore Agent: GigaDB — универсальный ADL-движок для генерации мульти-ISA ядер](index.html#/docs/agents/gigacore-gigadb-adl)
 
 ## 🧬 Алгоритмы эволюции

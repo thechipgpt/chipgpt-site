@@ -1,6 +1,6 @@
 # ⏱️ Механика Латентности VLIWGPT: Backward и Forward Dependencies
 
-> **Статус**: Reference Manual | **Модуль**: Scheduler / ISS | **Обновлено**: 2026-06-10
+> **Статус**: Reference Manual | **Модуль**: Scheduler / ISS | **Обновлено**: 2026-06-23
 
 В архитектуре VLIWGPT (Very Long Instruction Word) отсутствует аппаратный блок переупорядочивания (Reorder Buffer). Вся ответственность за синхронизацию выполнения инструкций лежит на **статическом планировщике компилятора**.
 
