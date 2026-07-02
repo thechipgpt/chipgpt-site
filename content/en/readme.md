@@ -1,10 +1,9 @@
-
-# 🧠 ChipGPT: Эволюционный AI-дизайн процессорных архитектур
+# 🧠 ChipGPT: Evolutionary AI-Driven Processor Architecture Design
 
 <picture>
   <source srcset="assets/banner.webp" type="image/webp">
   <img src="assets/banner.webp" 
-       alt="ChipGPT — Эволюционный AI-дизайн процессорных архитектур" 
+       alt="ChipGPT — Evolutionary AI-Driven Processor Architecture Design" 
        width="1082" height="604"
        loading="eager" 
        fetchpriority="high"
@@ -12,30 +11,30 @@
        style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 </picture>
 
-> Автоматизированный переход от базовых коммерческих ядер (VLIW/RISC-V) к сложным GPU/TPU-ускорителям через замкнутый цикл HW/SW ко-эволюции с математически гарантированной корректностью.
+> An automated pipeline from baseline commercial cores (VLIW/RISC-V) to complex GPU/TPU accelerators, enabled by a closed-loop HW/SW co-evolution cycle with mathematically guaranteed correctness.
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-green.svg)](https://www.python.org/downloads/)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
 [![Docs](https://img.shields.io/badge/docs-GitHub_Pages-brightgreen)](https://thechipgpt.github.io/chipgpt/)
 
+## 1. 🎯 Problem Statement
 
-## 1. 🎯 Постановка задачи
+Modern LLMs excel at generating high-level code but **fail catastrophically when synthesizing RTL (chip-level Verilog code)**. The reason: chip design is a *zero-tolerance domain*—an error in logic or clocking means a non-functional silicon die costing hundreds of millions of dollars, not a cheap hotfix (as in software).
 
-Современные LLM отлично генерируют высокоуровневый код, но **фатально ошибаются при синтезе RTL (код чипа на языке Verilog)**. Причина: проектирование чипов — это «домен нулевого допуска» (область с крайне низкой толерантностью к ошибкам). Ошибка в логике или в тактировании чипа означает нерабочий кремний за сотни миллионов долларов, а не дешевый hotfix (как в софте).
+ChipGPT addresses three fundamental challenges:
 
-ChipGPT решает три фундаментальные проблемы:
-1. **Отсутствие автоматического пространства архитектурного поиска.** Типичные ASIP-пайплайны генерации процессорных ядер требуют ручного выбора расширений ISA и микроархитектурных параметров.
-2. **Разрыв между HW и SW.** Эволюция ядра бесполезна без синхронной эволюции компилятора, ассемблера и рантайма.
-3. **Отсутствие математически обоснованной петли верификации.** Генеративные модели не имеют встроенного механизма мгновенной проверки функциональной корректности.
+1. **Lack of an automated architectural search space.** Typical ASIP (Application-Specific Instruction-Set Processor) generation pipelines require manual selection of ISA extensions and microarchitectural parameters.
+2. **The HW/SW gap.** Evolving the core is useless without the synchronous evolution of the compiler, assembler, and runtime.
+3. **No mathematically grounded verification loop.** Generative models lack a built-in mechanism for instant functional correctness checking.
 
-Мы вводим **эволюционный HW/SW ко-дизайн**, где каждая итерация сопровождается строгим формальным контролем через потактовый симулятор (ISS) и систему само-оценки MERASIC.
+We introduce **evolutionary HW/SW co-design**, where each iteration is accompanied by rigorous formal control through a cycle-accurate ISS (Instruction Set Simulator) and the MERASIC self-assessment system.
 
-📖 *Подробнее:* [Парадигма эволюционного дизайна чипов](#/wiki/evolutionary-paradigm) | [DSE vs Evolution: Сравнительный анализ](#/wiki/dse-vs-evolution)
+📖 *Learn more:* [The Evolutionary Chip Design Paradigm](#/wiki/evolutionary-paradigm) | [DSE vs. Evolution: A Comparative Analysis](#/wiki/dse-vs-evolution)
 
 ---
 
-## 2. 📐 Архитектура системы
+## 2. 📐 System Architecture
 
 ```mermaid
 graph TD
@@ -56,139 +55,139 @@ graph TD
   class A,B ai;
 ```
 
-Система заменяет линейный `Design Space Exploration (DSE)` на **эволюционный цикл с замкнутой петлей верификации**: генерация → симуляция → оценка → отбор → мутация/скрещивание → новая эпоха.
+The system replaces the linear `Design Space Exploration (DSE)` with an **evolutionary closed-loop verification cycle**: generation → simulation → evaluation → selection → mutation/crossover → next epoch.
 
 ---
 
+## 3. 🧬 Epochs of Processor Core Evolution
 
-## 3. 🧬 Эпохи эволюции процессорных ядер
+The evolution **from VLIW to GPU** is divided into four qualitatively distinct epochs. Each epoch entails the **synchronous evolution of three layers**: core architecture, assembler/ISA, and the optimizing compiler.
+Each epoch may consist of intermediate sub-epochs.
 
-Эволюция **от VLIW-к-GPU** разбита на 4 качественно различные эпохи. Каждая эпоха подразумевает **синхронную эволюцию трёх слоёв**: архитектуры ядра, ассемблера/ISA, и оптимизирующего компилятора.
-Каждая эпоха может состоять из промежуточных мини-эпох.
+| Epoch | Architectural Shift | Key Changes |
+|:------|:---------------------|:------------|
+| **I** | Basic VLIW | Static scheduler, fixed functional units, simple register file |
+| **II** | SIMD-VLIW | Vector extensions, predicated execution, widened data buses |
+| **III** | Basic WARP | Dynamic thread management, shared memory, basic coherence |
+| **IV** | GPGPU / TPU | Massive parallelism, tensor cores, hardware warp schedulers, HBM interface |
 
-| Эпоха | Архитектурный сдвиг | Ключевые изменения |
-|:------|:-------------------|:-------------------|
-| **I** | Basic VLIW | Статический планировщик, фиксированные функциональные блоки, простой регистровый файл |
-| **II** | SIMD-VLIW | Векторные расширения, предикатное выполнение, расширенные шины данных |
-| **III** | Basic WARP | Динамическое управление потоками, разделяемая память, базовая когерентность |
-| **IV** | GPGPU / TPU | Массовый параллелизм, тензорные блоки, аппаратные планировщики warps, HBM-интерфейс |
-
-Переход между эпохами происходит только при достижении порога функциональной корректности `>99.99%` на MERASIC и роста IPC `≥1.8x`.
-
----
-
-## 4. 📊 MERASIC: Система бенчмарков и само-оценки
-
-**MERASIC** (**M**icroarchitectural **E**valuation & **R**easoning for **A**I **Si**licon **C**o-design) — инфраструктурный слой, превращающий генерацию чипов из вероятностной лотереи в инженерный процесс.
-
-### Почему LLM не справляются с RTL напрямую?
-- Не отслеживают параллельные состояния (конвейеры, буферы переупорядочивания)
-- Генерируют синтаксически верный, но функционально сломанный код
-- Отсутствует встроенный механизм мгновенной проверки
-
-### Как работает MERASIC?
-1. **Генерация ISS** → проверка на эталонных тестах → получение математически верного референса.
-2. **ISS как Oracle** → используется для верификации сгенерированного Verilog/SystemVerilog.
-3. **Метрики оценки:** функциональное покрытие, IPC, энерго-эффективность (оценка), плотность кода, успешность компиляции.
-4. **Автоматическая классификация ошибок:** логические, тайминговые, ресурсные, ISA-несоответствия.  
-  
-MERASIC не просто «тестирует ИИ». Он формирует **reward-сигналы для GRPO** и обеспечивает воспроизводимость результатов.
-
-Мы тестируем связку: **LLM (генератор) → EDA-инструменты (компиляторы) → ISS-модель (судья/референс)**. Вход — текстовая спецификация. Выход — верифицированный RTL, JSON-архитектура + трассировка ризонинга. Модель учится не просто «выдавать код», а принимать инженерные решения и доказывать их корректность через симуляцию.
+Transition between epochs occurs only upon achieving functional correctness `>99.99%` on MERASIC and an IPC increase of `≥1.8x`.
 
 ---
 
-## 5. ⚙️ ISS: Ядро системы эволюции
+## 4. 📊 MERASIC: Benchmarking and Self-Assessment System
 
-**ISS (Instruction Set Simulator)** — 100% функциональный эквивалент реального чипа, написанный на C++17. Реализует cycle-accurate симуляцию конвейеров, памяти, шин и механизмов синхронизации.
+**MERASIC** (**M**icroarchitectural **E**valuation & **R**easoning for **A**I **Si**licon **C**o-design) is the infrastructure layer that transforms chip generation from a probabilistic lottery into an engineering process.
 
-### Три роли ISS в ChipGPT:
-| Роль | Описание |
-|:-----|:---------|
-| 🎯 **Ground Truth** | Эталонная модель для расчёта reward-функций в GRPO/RLHF |
-| 🔍 **Golden Reference** | Математический оракул для сравнения RTL-реализаций (co-simulation) |
-| 🔄 **Evolving Core** | Динамически обновляется на каждой эпохе (напр. VLIW → SIMD-VLIW) |
+### Why LLMs Fail at RTL Generation Directly?
+- They fail to track parallel states (pipelines, reorder buffers)
+- They generate syntactically valid but functionally broken code
+- They lack an integrated mechanism for instant verification
 
-ISS спроектирован как плагин-архитектура: новые ISA, контроллеры памяти и планировщики подключаются через унифицированный API без перекомпиляции ядра симулятора.
+### How MERASIC Works:
+1. **ISS Generation** → validated against reference tests → produces a mathematically correct reference.
+2. **ISS as Oracle** → used to verify generated Verilog/SystemVerilog.
+3. **Evaluation Metrics:** functional coverage, IPC, energy efficiency (estimate), code density, compilation success rate.
+4. **Automated Error Classification:** logical, timing, resource, ISA-mismatch errors.
 
----
+MERASIC is not just about "testing the AI." It generates **reward signals for GRPO** and ensures result reproducibility.
 
-## 6. 🧱 Базовые процессорные ядра
-
-Эволюция начинается с коммерчески проверенных и академически документированных архитектур:
-
-| Ядро | Тип | Источник | Роль в эволюции |
-|:-----|:----|:---------|:----------------|
-| `r-VEX` | VLIW | Open-source / HP legacy | Seed для Эпохи I, базовое ядро для эволюции |
-| `RV32I_Min` | RISC-V | RISC-V Foundation | Альтернативный старт, фокус на расширяемости ISA |
-| `Custom ADL Spec` | nML/ArchDL | ChipGPT DSL | Формальное описание для ADL-Agent |
-
-Базовые ядра содержат полные тулчейны (GCC/LLVM бэкенды, ассемблер, линкер, профилировщик), которые также подлежат эволюционному обновлению.
+We validate the pipeline: **LLM (generator) → EDA tools (compilers) → ISS model (judge/reference)**. Input is a textual specification. Output is a verified RTL, JSON architecture, and reasoning trace. The model learns not just to "produce code," but to make engineering decisions and prove their correctness through simulation.
 
 ---
 
-## 7. 🤖 GRPO обучение
+## 5. ⚙️ ISS: The Core of the Evolution System
 
-Для эмуляции архитектурного мышления модель обучается с использованием **Group Relative Policy Optimization (GRPO)** — варианта RLHF, оптимизированного для дискретных пространств решений с групповой нормализацией reward.
+**ISS (Instruction Set Simulator)** is the 100% functional equivalent of the actual chip, written in C++17. It implements cycle-accurate simulation of pipelines, memory, buses, and synchronization mechanisms.
 
-### Что обучается:
-| Поток | Цель | Reward-сигнал |
-|:------|:------|:--------------|
-| `6.1 Compiler` | Автогенерация оптимизирующего бэкенда | Успешность компиляции, размер бинарника, скорость выполнения |
-| `6.2 Assembler/ISA` | Генерация мнемоник и форматов инструкций | Покрытие MERASIC, корректность декодирования, совместимость с ADL |
-| `6.3 Architecture` | Эволюция микроархитектуры | IPC, латентность конвейера, энерго-оценка, формальная корректность |
+### The Three Roles of ISS in ChipGPT:
+| Role | Description |
+|:-----|:------------|
+| 🎯 **Ground Truth** | Reference model for computing reward functions in GRPO/RLHF |
+| 🔍 **Golden Reference** | Mathematical oracle for comparing RTL implementations (co-simulation) |
+| 🔄 **Evolving Core** | Dynamically updated each epoch (e.g., VLIW → SIMD-VLIW) |
 
-Модель непрерывно обогащается новыми архитектурными паттернами с рынка (Tensor Cores, Systolic Arrays, Mesh NoC) через RAG-индекс и формирует проверяемые гипотезы.
-
----
-
-## 8. 📚 RAG помощники
-
-RAG (Retrieval-Augmented Generation) выполняет роль **контекстной памяти и экспертной системы**, направляющей эволюцию.
-
-### 8.1 RAG как источник контекста
-При генерации новой архитектуры LLM запрашивает релевантные паттерны:
-- Примеры банковского доступа к регистровым файлам в современных GPU
-- Реализации векторных расширений в RISC-V V / ARM SVE
-- Паттерны когерентности кэшей и протоколов шин (AXI, TileLink)
-
-### 8.2 RAG как оценщик кода
-Параллельный агент использует RAG для статической и семантической проверки:
-- Выявление анти-паттернов в Verilog/SystemVerilog
-- Проверка соответствия стандартам кодирования и именования
-- Сравнение с лучшими практиками из открытых IP-блоков
-
-📖 *Подробнее:* [RAG в эволюционном дизайне: от теории к практике](#/wiki/rag-chip-design)
+ISS is built as a plugin architecture: new ISAs, memory controllers, and schedulers can be attached via a unified API without recompiling the simulator core.
 
 ---
 
-## 9. 🕳️ Агентный подход к генерации
+## 6. 🧱 Baseline Processor Cores
 
-Система разделена на два комплементарных агента, работающих в замкнутом цикле:
+Evolution starts from commercially proven and academically documented architectures:
 
-| Агент | Технология | Задача | Гарантия |
-|:------|:-----------|:--------|:---------|
-| **ADL-Agent** | Формальные ADL/nML + CodeGen | Генерация ISS, компилятора, ассемблера из спецификации ISA | 100% семантическая корректность, детерминизм |
-| **LLM+EA-Agent** | LLM + Эволюционные Алгоритмы | Поиск оптимальной топологии, параметров кэша, глубины конвейера, политик синхронизации | Креативность, оптимизация в неформализуемых пространствах |
+| Core | Type | Source | Role in Evolution |
+|:-----|:-----|:-------|:-------------------|
+| `r-VEX` | VLIW | Open-source / HP legacy | Seed for Epoch I, foundational core for evolution |
+| `RV32I_Min` | RISC-V | RISC-V Foundation | Alternative starting point, focus on ISA extensibility |
+| `Custom ADL Spec` | nML/ArchDL | ChipGPT DSL | Formal description for the ADL-Agent |
 
-**Взаимодействие:** ADL-Agent создаёт формальный фундамент. LLM+EA-Agent генерирует популяцию архитектурных вариантов. MERASIC оценивает. GRPO обновляет политику. Цикл повторяется до достижения целевых метрик эпохи.
+Baseline cores include complete toolchains (GCC/LLVM backends, assembler, linker, profiler), which are also subject to evolutionary updates.
 
-📖 *Подробнее:* [Агентное проектирование процессоров: ADL + LLM + EA](#/wiki/agent-pipeline)
+---
+
+## 7. 🤖 GRPO Training
+
+To emulate architectural reasoning, the model is trained using **Group Relative Policy Optimization (GRPO)** — a variant of RLHF optimized for discrete decision spaces with group-normalized rewards.
+
+### What is Trained:
+| Stream | Objective | Reward Signal |
+|:-------|:-----------|:---------------|
+| `6.1 Compiler` | Auto-generation of optimizing backend | Compilation success, binary size, execution speed |
+| `6.2 Assembler/ISA` | Generation of mnemonics and instruction formats | MERASIC coverage, decode correctness, ADL compatibility |
+| `6.3 Architecture` | Microarchitecture evolution | IPC, pipeline latency, energy estimate, formal correctness |
+
+The model is continuously enriched with new architectural patterns from the market (Tensor Cores, Systolic Arrays, Mesh NoC) via the RAG index and formulates testable hypotheses.
+
+---
+
+## 8. 📚 RAG Assistants
+
+RAG (Retrieval-Augmented Generation) serves as **contextual memory and an expert system**, guiding evolution.
+
+### 8.1 RAG as Context Source
+When generating a new architecture, the LLM queries relevant patterns:
+- Examples of register file banking in modern GPUs
+- Implementations of vector extensions in RISC-V V / ARM SVE
+- Cache coherence and bus protocol patterns (AXI, TileLink)
+
+### 8.2 RAG as Code Evaluator
+A parallel agent uses RAG for static and semantic checking:
+- Detection of anti-patterns in Verilog/SystemVerilog
+- Conformance to coding and naming standards
+- Comparison with best practices from open-source IP blocks
+
+📖 *Learn more:* [RAG in Evolutionary Design: From Theory to Practice](#/wiki/rag-chip-design)
+
+---
+
+## 9. 🕳️ Agent-Based Generation
+
+The system is split into two complementary agents operating in a closed loop:
+
+| Agent | Technology | Task | Guarantee |
+|:------|:-----------|:------|:-----------|
+| **ADL-Agent** | Formal ADL/nML + CodeGen | Generates ISS, compiler, assembler from ISA specification | 100% semantic correctness, determinism |
+| **LLM+EA-Agent** | LLM + Evolutionary Algorithms | Explores optimal topology, cache parameters, pipeline depth, synchronization policies | Creativity, optimization in non-formalizable spaces |
+
+**Interaction:** ADL-Agent builds the formal foundation. LLM+EA-Agent generates a population of architectural variants. MERASIC evaluates them. GRPO updates the policy. The cycle repeats until the target epoch metrics are achieved.
+
+📖 *Learn more:* [Agent-Based Processor Design: ADL + LLM + EA](#/wiki/agent-pipeline)
 
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Клонирование
+# 1. Clone the repository
 git clone https://github.com/thechipgpt/chipgpt.git && cd chipgpt
 
-# 2. Зависимости (Python + C++)
+# 2. Install dependencies (Python + C++)
 pip install -r requirements.txt
 ./scripts/setup_cxx_deps.sh
 
-# 3. Загрузка базовой модели и весов GRPO
+# 3. Download the base model and GRPO weights
 ./scripts/download_models.sh
 
-# 4. Запуск первой эпохи эволюции (VLIW → SIMD-VLIW)
+# 4. Run the first evolution epoch (VLIW → SIMD-VLIW)
 python chipgpt/evolve.py --epoch 1 --base-core rvex --benchmarks merasic_v1
+```
