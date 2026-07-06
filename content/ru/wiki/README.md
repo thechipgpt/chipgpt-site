@@ -14,6 +14,10 @@
 - [⚡ Практика ChipGPT: Оптимизация CNN и механизмов внимания](index.html#/wiki/examples/optimizing-vliw-instructions-evolution)
 - [⚡ Практика ChipGPT: KV Cache-Ускоритель. Гибридный сопроцессор и расширение ISA](index.html#/wiki/examples/vliw-to-kv-cache-accelerator-isa)
 
+## 📈 Trace-Driven Design: Эволюция на основе реальных нагрузок GPU
+- [⚡ **От PTX-трасс к ChipGPT: Эволюционная семантическая архитектура**](index.html#/wiki/trace-driven/ptx-traces-to-semantic-architecture)
+
+
 ## 🧠 Инструменты и агенты
 - [RAG в эволюционном дизайне](index.html#/wiki/rag-chip-design)
 - [Агентное проектирование: ADL + LLM + EA](index.html#/wiki/agent-pipeline)
@@ -44,6 +48,13 @@
 - [Платформа VLIWGPT: VLIW-ядро коммерческого уровня на базе r-VEX](index.html#/wiki/platforms/vliwgpt-rvex-platform)
 - [Отладка eSW в Renode: интеграция VLIW и GRPO-петля](index.html#/wiki/debugging/renode-vliw-grpo)
 - [VLIWGPT ISS: Детерминированная симуляция конвейера Эпохи 1](index.html#/wiki/simulation/vliwgpt-iss-epoch1-pipeline)
+
+
+<!--
+Trace-Driven Design: Эволюция на основе реальных нагрузок:
+- [🔬 Интеграция Accel-Sim в эволюционный контур ChipGPT](index.html#/wiki/trace-driven/accel-sim-integration) *(опционально, для будущей статьи)*
+- [🧠 Семантическая абстракция: MLIR и классификация PTX-инструкций](index.html#/wiki/trace-driven/mlir-semantic-abstraction) *(опционально, для будущей статьи)*
+-->
 
 <!--
 22
