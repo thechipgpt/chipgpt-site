@@ -12,6 +12,7 @@
 ## 🧩 Функциональные и вычислительные блоки VLIWGPT
 - [**[Эпоха II] VLIWGPT-SIMD**: Архитектура Эпохи II](index.html#/docs/blocks/epoch-2-simd-vliw)
 - [⚡ AI-Ready FPU: от CGPE-эмуляции к FP4/FP6 тензорам](index.html#/docs/blocks/fpu-evolution-cgpe-to-fp4)
+- [**[Эпоха III] WAPR-V**: Эволюционный SIMT-акселератор на VLIW-кластерах](index.html#/docs/blocks/warp-v-vliw-simt-evolutionary-accelerator)
 
 ## 🤖 Agentic EDA & ChipGPT Agents
 - [⚡ **ChipGPT Agentic EDA: Архитектура, Агенты и MCP-Интеграция**](index.html#/docs/agentic-eda/architecture-mcp-integration)
