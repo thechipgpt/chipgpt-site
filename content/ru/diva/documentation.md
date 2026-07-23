@@ -7,6 +7,7 @@
 
 ## 🧩 Оптимизация дизайна AI-чипов
 - [**За рамки CUDA**: WARP-V — нишевый ускоритель LLM, который исправляет недостатки архитектуры NVIDIA](index.html#/docs/blocks/warp-v-vliw-simt-evolutionary-accelerator)
+- [**Семантический профайлер DIVA**: Инструмент архитектурного анализа нагрузок для AI-ускорителей](index.html#/diva/ptx2vliw/ptx-vliw-semantic-profiler)
 
 ## 🧮 Оптимизация моделей AIRI Institute
 - [**NNTile**: Инфраструктура сбора трасс](index.html#/diva/airi/nntile-trace-collection-tile-centric)
