@@ -4,6 +4,7 @@
 ## 🚀 Ключевые документы
 - [**Введение в DIVA**: От данных к архитектуре](index.html#/diva/general/trace-driven-architecture-evolution)
 - [⚡ **Trace-Driven Design: Эволюция на основе реальных нагрузок GPU**](index.html#/wiki/trace-driven/ptx-traces-to-semantic-architecture)
+- [**Полный Pipeline Оптимизации LLM**: От ONNX до Кастомных Чипов](index.html#/diva/general/full-llm-optimization-pipeline-onnx-to-custom-silicon)
 
 ## 🧩 Оптимизация дизайна AI-чипов
 - [**За рамки CUDA**: WARP-V — нишевый ускоритель LLM, который исправляет недостатки архитектуры NVIDIA](index.html#/docs/blocks/warp-v-vliw-simt-evolutionary-accelerator)

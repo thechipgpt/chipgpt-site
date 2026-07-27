@@ -343,8 +343,8 @@ class VLIW_ISS:
 # 📚 Справочные материалы (References)
 
 1. **Accel-Sim Framework** — [An Extensible Simulation Framework for Validated GPU Modeling](https://github.com/accel-sim/accel-sim-framework) (Калибровка и золотой стандарт метрик)
-2. **Guess & Sketch** — [Neuro-Symbolic Assembly Translation](https://arxiv.org/abs/2305.18468) (LLM генерация + SMT верификация)
-3. **LEGO-Compiler** — [Divide, Translate, Verify, Compose](https://arxiv.org/abs/2310.04832) (Блочная трансляция с гарантиями)
+2. **Guess & Sketch** — [Neuro-Symbolic Assembly Translation](https://arxiv.org/pdf/2309.14396) (LLM генерация + SMT верификация)
+3. **LEGO-Compiler** — [Divide, Translate, Verify, Compose](https://arxiv.org/abs/2505.20356) (Блочная трансляция с гарантиями)
 4. **CASS / NeuComBack** — [Assembly-to-Assembly Translation Benchmarks](https://github.com/cass-project/cass) (Датасеты для обучения)
 5. **GRPO** — [Group Relative Policy Optimization for Discrete Spaces](https://arxiv.org/abs/2310.07461) (Эволюционный цикл)
 6. **NVIDIA PTX ISA v8.5** — [Parallel Thread Execution ISA Documentation](https://docs.nvidia.com/cuda/parallel-thread-execution/) (Семантика инструкций)
