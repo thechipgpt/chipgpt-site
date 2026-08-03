@@ -11,6 +11,9 @@
 - [**Семантический профайлер DIVA**: Инструмент архитектурного анализа нагрузок для AI-ускорителей](index.html#/diva/ptx2vliw/ptx-vliw-semantic-profiler)
 - [⚡ **Warp Specialization для VLIW+NUMA**: Стратегия Превосходства над Nvidia Hopper и Blackwell](index.html#/diva/warp-v/warp-specialization-vliw-numa-hopper-blackwell-strategy)
 
+## 🧮 Оптимизация моделей GigaChat
+- [**Прорывное ускорение Sparse Attention и Mixed Precision для моделей GigaChat и DeepSeek**](index.html#/diva/giga/sparse-attention-mixed-precision-gigachat-deepseek)
+
 ## 🧮 Оптимизация моделей AIRI Institute
 - [**NNTile**: Инфраструктура сбора трасс](index.html#/diva/airi/nntile-trace-collection-tile-centric)
 - [**Стратегия тайловых акселераторов** и нишевое превосходство над GPU](index.html#/diva/airi/tile-centric-accelerators-strategy)
