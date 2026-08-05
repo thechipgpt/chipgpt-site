@@ -13,7 +13,7 @@
 
 ## 🧮 Оптимизация моделей GigaChat
 - [**Прорывное ускорение Sparse Attention и Mixed Precision для моделей GigaChat и DeepSeek**](index.html#/diva/giga/sparse-attention-mixed-precision-gigachat-deepseek)
-- [**FlashAttention-5: Революция в инференсе LLM на архитектуре WARP-V и NNTile**](index.html#/diva/warp-v/chipgpt-flashattention5-warpv-nntile-roadmap__ds)
+- [**FlashAttention-5: Революция в инференсе LLM на архитектуре WARP-V и NNTile**](index.html#/diva/warp-v/chipgpt-flashattention5-warpv-nntile-roadmap)
 
 ## 🧮 Оптимизация моделей AIRI Institute
 - [**NNTile**: Инфраструктура сбора трасс](index.html#/diva/airi/nntile-trace-collection-tile-centric)
