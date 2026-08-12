@@ -19,6 +19,7 @@
 - [**NNTile**: Инфраструктура сбора трасс](index.html#/diva/airi/nntile-trace-collection-tile-centric)
 - [**Стратегия тайловых акселераторов** и нишевое превосходство над GPU](index.html#/diva/airi/tile-centric-accelerators-strategy)
 - [**Стратегический план для проектирования Tile-Centric чипов**](index.html#/diva/airi/nntile/trace-collection-strategy-tile-centric)
+- [⚡ **Синергия HW/SW Ускорителей для Sparse Attention**: Реализация N:M Activation Sparsity на архитектуре WARP-V + XYL](index.html#/diva/airi/nm-sparsity-warp-v-xy-synergy)
 
 <!--
 - [NNTile: Семантический майнинг и кластеризация паттернов](index.html#/docs/diva/models/airi/nntile-mining)
