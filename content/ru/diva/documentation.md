@@ -11,6 +11,9 @@
 - [**Семантический профайлер DIVA**: Инструмент архитектурного анализа нагрузок для AI-ускорителей](index.html#/diva/ptx2vliw/ptx-vliw-semantic-profiler)
 - [⚡ **Warp Specialization для VLIW+NUMA**: Стратегия Превосходства над Nvidia Hopper и Blackwell](index.html#/diva/warp-v/warp-specialization-vliw-numa-hopper-blackwell-strategy)
 
+## 🔄 Оптимизация компилятора
+- [**Оптимальный MLIR-based компилятор для поддержки фарминга новых AI-инструкций**](index.html#/diva/compiler/optimal-mlir-compiler-farming-ai-instructions)
+
 ## 🧮 Оптимизация моделей GigaChat
 - [**Прорывное ускорение Sparse Attention и Mixed Precision для моделей GigaChat и DeepSeek**](index.html#/diva/giga/sparse-attention-mixed-precision-gigachat-deepseek)
 - [**FlashAttention-5: Революция в инференсе LLM на архитектуре WARP-V и NNTile**](index.html#/diva/warp-v/chipgpt-flashattention5-warpv-nntile-roadmap)
@@ -21,6 +24,7 @@
 - [**Стратегический план для проектирования Tile-Centric чипов**](index.html#/diva/airi/nntile/trace-collection-strategy-tile-centric)
 - [⚡ **Синергия HW/SW Ускорителей для Sparse Attention**: Реализация N:M Activation Sparsity на архитектуре WARP-V + XYL](index.html#/diva/airi/nm-sparsity-warp-v-xy-synergy)
 
+## 🧮 Оптимизация моделей Higgsfield (Wan) 
 <!--
 - [NNTile: Семантический майнинг и кластеризация паттернов](index.html#/docs/diva/models/airi/nntile-mining)
 - [NNTile: Синтез VLIW-ядра и симуляция в Accel-Sim](index.html#/docs/diva/models/airi/nntile-synthesis)
