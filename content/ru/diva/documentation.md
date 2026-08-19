@@ -25,6 +25,7 @@
 - [⚡ **Синергия HW/SW Ускорителей для Sparse Attention**: Реализация N:M Activation Sparsity на архитектуре WARP-V + XYL](index.html#/diva/airi/nm-sparsity-warp-v-xy-synergy)
 
 ## 🧮 Оптимизация моделей Higgsfield (Wan) 
+- [⚡ **Тензорные ядра на базе WARP-V для ускорения WAN-сетей генерации видео**: полная стратегия NVFP4-ускорения](index.html#/diva/wan-video/warp-v-tensor-cores-wan-video-generation-acceleration)
 <!--
 - [NNTile: Семантический майнинг и кластеризация паттернов](index.html#/docs/diva/models/airi/nntile-mining)
 - [NNTile: Синтез VLIW-ядра и симуляция в Accel-Sim](index.html#/docs/diva/models/airi/nntile-synthesis)
