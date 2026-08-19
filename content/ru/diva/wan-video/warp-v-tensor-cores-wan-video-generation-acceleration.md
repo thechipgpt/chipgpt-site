@@ -148,6 +148,90 @@ graph TD
 
 **Описание схемы:** Три столпа WARP-V работают синергетически. NUMA-локальность устраняет «стену памяти», помещая данные в локальную SRAM с латентностью ~10 циклов вместо 400–600 для HBM. Детерминизм VLIW-планирования гарантирует, что компилятор знает точное время каждой операции, исключая джиттер и обеспечивая стабильный FPS для видео. Warp Specialization скрывает латентности загрузок: пока Consumer-кластер вычисляет текущий блок, Producer-кластер уже загружает следующий. В результате — 2–10× ускорение WAN и 7–20× лучшая энергоэффективность.
 
+```mermaid
+graph TD
+    subgraph NVIDIA["NVIDIA GPU (Blackwell)"]
+        A1["Вычисления<br/>(Tensor Cores)"] -->|"Данные"| B1["L2 Cache"]
+        B1 -->|"Данные"| C1["HBM3e<br/>(внешняя память)"]
+        C1 -->|"Загрузка: 400-600 циклов<br/>(70% энергии)"| B1
+        B1 -->|"Высокая латентность"| A1
+        D1["Кэш-промахи"] -.->|"Недетерминизм"| B1
+    end
+    
+    subgraph WARPV["WARP-V"]
+        A2["Consumer Warp<br/>(Вычисления)"] -->|"Данные готовы<br/>(~10 циклов)"| B2["Producer Warp<br/>(Загрузка)"]
+        B2 -->|"Предзагрузка<br/>(синхронная)"| C2["SRAM<br/>(локальная память)"]
+        C2 -->|"Данные уже здесь"| A2
+        D2["NUMA-компилятор"] -.->|"Статическое планирование"| B2
+        D2 -.->|"Статическое планирование"| C2
+    end
+    
+    style NVIDIA fill:#fee2e2,stroke:#dc2626
+    style WARPV fill:#dcfce7,stroke:#16a34a
+    style D1 fill:#fef3c7,stroke:#d97706
+    style D2 fill:#dbeafe,stroke:#2563eb
+```
+**Описание схемы:** Фундаментальное различие в организации памяти — ключевое преимущество WARP-V.
+
+```mermaid
+graph TD
+    subgraph NVIDIA_Mem["NVIDIA H100 — Иерархия памяти"]
+        N1["Регистры<br/>(~1 цикл)"] --> N2["Shared Memory<br/>(~20-30 циклов)"]
+        N2 --> N3["L2 Cache<br/>(~200 циклов)"]
+        N3 --> N4["HBM3e<br/>(400-600 циклов)"]
+        N4 -.->|"Кэш-промахи"| N2
+        N4 -.->|"70% энергии"| N4
+    end
+    
+    subgraph WARPV_Mem["WARP-V — Иерархия памяти"]
+        W1["Регистры<br/>(~1 цикл)"] --> W2["SRAM (локальная)<br/>(~10 циклов)"]
+        W2 --> W3["SRAM (удалённый NUMA-узел)<br/>(~30-50 циклов)"]
+        W3 --> W4["Внешняя память<br/>(при необходимости)"]
+        W2 -.->|"Компилятор размещает<br/>данные заранее"| W2
+    end
+    
+    style NVIDIA_Mem fill:#fee2e2,stroke:#dc2626
+    style WARPV_Mem fill:#dcfce7,stroke:#16a34a
+    style N4 fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style W2 fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+```
+**Описание схемы:** равнение иерархии памяти. В NVIDIA H100 путь от HBM до регистров проходит через L2 и Shared Memory с задержками 400-600 циклов, а кэш-промахи возвращают данные обратно, создавая недетерминизм. В WARP-V компилятор размещает данные в локальной SRAM (~10 циклов) заранее, удалённые NUMA-узлы имеют задержку 30-50 циклов, а внешняя память используется только при необходимости. Это даёт детерминированный доступ к данным.
+
+```mermaid
+graph TD
+    subgraph Step1["ШАГ 1: Компилятор анализирует граф"]
+        A["MLIR-фронтенд"] --> B["Анализ зависимостей<br/>и размера данных"]
+        B --> C["Разбивка на тайлы<br/>(tiling)"]
+        C --> D["NUMA-размещение:<br/>какой блок на каком узле"]
+    end
+    
+    subgraph Step2["ШАГ 2: Статическое планирование"]
+        E["Producer Warp"] --> F["Загрузка блока N<br/>(фиксированная латентность)"]
+        G["Consumer Warp"] --> H["Вычисление блока N<br/>(фиксированная латентность)"]
+        I["Epilogue Warp"] --> J["Softmax/аккумуляция<br/>(фиксированная латентность)"]
+        E -.->|"Предзагрузка блока N+1"| G
+        G -.->|"Передача результата"| I
+    end
+    
+    subgraph Step3["ШАГ 3: Детерминированное исполнение"]
+        K["Все латентности известны<br/>компилятору"]
+        K --> L["0% джиттер"]
+        K --> M["Предсказуемый FPS"]
+        K --> N["Стабильная частота кадров"]
+    end
+    
+    Step1 --> Step2
+    Step2 --> Step3
+    
+    style Step1 fill:#dbeafe,stroke:#2563eb
+    style Step2 fill:#fef3c7,stroke:#d97706
+    style Step3 fill:#dcfce7,stroke:#16a34a
+    style L fill:#dcfce7,stroke:#16a34a
+    style M fill:#dcfce7,stroke:#16a34a
+    style N fill:#dcfce7,stroke:#16a34a
+```
+**Описание схемы:** Трёхшаговый процесс устранения "стены памяти" в **WARP-V**. **Шаг 1** — компилятор анализирует граф вычислений, определяет размеры данных и размещает их по NUMA-узлам. **Шаг 2** — статическое планирование: Producer загружает блок N, Consumer вычисляет, Epilogue обрабатывает, при этом Producer уже предзагружает блок N+1. **Шаг 3** — все латентности известны компилятору, что даёт 0% джиттер, предсказуемый FPS и стабильную частоту кадров.
+
 ### 2.2. Маппинг проблем WAN → решений WARP-V
 
 | Проблема WAN | Решение WARP-V | Механизм |
@@ -171,6 +255,43 @@ graph TD
 | **MoE** | Divergence penalty 5–8% | Нулевой (SIMT-стек) | **5–8% сэкономлено** |
 | **Энергия** | 700–1000 Вт | 40–100 Вт | **7–20× лучше** |
 | **Утилизация (batch=1)** | 40–60% | 88–92% | **2× полезной работы** |
+
+```mermaid
+graph TD
+    subgraph Utilization["УТИЛИЗАЦИЯ ВЫЧИСЛИТЕЛЬНЫХ РЕСУРСОВ (batch=1)"]
+        
+        subgraph NVIDIA["NVIDIA H100"]
+            N1["Пик: 3000 TOPS"]
+            N2["Реальная: 1200-1800 TOPS"]
+            N3["Утилизация: 40-60%"]
+            N1 --> N2
+            N2 --> N3
+            N4["Причина: ожидание данных из HBM<br/>(400-600 циклов)"]
+            N3 -.-> N4
+        end
+        
+        subgraph WARPV["WARP-V (4 кластера)"]
+            W1["Пик: 500 TOPS"]
+            W2["Реальная: 440-460 TOPS"]
+            W3["Утилизация: 88-92%"]
+            W1 --> W2
+            W2 --> W3
+            W4["Причина: данные уже в SRAM<br/>(~10 циклов)"]
+            W3 -.-> W4
+        end
+        
+        NVIDIA -->|"2× полезной работы<br/>при меньшем пике"| WARPV
+        
+    end
+    
+    style NVIDIA fill:#fee2e2,stroke:#dc2626
+    style WARPV fill:#dcfce7,stroke:#16a34a
+    style N3 fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style W3 fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    style N4 fill:#fef3c7,stroke:#d97706
+    style W4 fill:#dbeafe,stroke:#2563eb
+```
+**Описание схемы:** Сравнение реальной утилизации вычислительных ресурсов при инференсе с batch=1. NVIDIA H100 имеет пиковую производительность 3000 TOPS, но из-за ожидания данных из HBM (400-600 циклов) реальная утилизация падает до 40-60%, давая 1200-1800 TOPS. **WARP-V** с пиком 500 TOPS достигает утилизации 88-92% за счёт локальной SRAM (~10 циклов), давая 440-460 TOPS полезной работы. Это означает, что **WARP-V** выполняет в 2 раза больше полезной работы при значительно меньшем энергопотреблении.
 
 #### 2.3.2. WARP-V vs Классический TPU (Systolic Array)
 
@@ -310,6 +431,81 @@ graph TD
 | **Латентность** | ~48 тактов (весь пайплайн) |
 | **Заменяет** | 8–12 отдельных kernel'ов |
 | **Ускорение** | 2–3× за счёт fusion |
+
+```mermaid
+graph TD
+    subgraph AttnFP4["МАКРО-ИНСТРУКЦИЯ WANV.ATTN_FP4 — ПОЛНЫЙ ПАЙПЛАЙН FP4 ATTENTION"]
+        
+        subgraph Inputs["ВХОДНЫЕ ДАННЫЕ"]
+            I1["Тензор Q (NVFP4)"]
+            I2["Тензор K (NVFP4)"]
+            I3["Тензор V (NVFP4)"]
+            I4["Регистр config<br/>(softmax_mode, qat_mode)"]
+        end
+        
+        subgraph Stage1["ЭТАП 1: Матричное умножение Q × Kᵀ"]
+            S1["WANV.MMA_BLOCK_FP4<br/>4-битные тензорные ядра<br/>Блоковое масштабирование"]
+            S1a["Результат S = Q × Kᵀ<br/>Выход в FP16 для стабильности"]
+            S1 --> S1a
+        end
+        
+        subgraph Stage2["ЭТАП 2: Выборочный Softmax с гибридной точностью"]
+            S2{"Выбор режима<br/>Softmax"}
+            S2a["Режим ThriftAttention<br/>(без дообучения)<br/><br/>Эвристика:<br/>• 5% важных блоков → FP16<br/>• 95% блоков → FP4"]
+            S2b["Режим Attn-QAT<br/>(с дообучением)<br/><br/>• Softmax в FP16<br/>• Имитация шума FP4<br/>• Стабильные градиенты"]
+            S2c["Онлайн-softmax<br/>Объединение результатов<br/>FP16/FP32 аккумуляция"]
+            
+            S2 -->|"Без дообучения"| S2a
+            S2 -->|"С дообучением"| S2b
+            S2a --> S2c
+            S2b --> S2c
+        end
+        
+        subgraph Stage3["ЭТАП 3: Матричное умножение P × V"]
+            S3["WANV.MMA_BLOCK_FP4<br/>4-битные тензорные ядра<br/>Блоковое масштабирование"]
+            S3a["Результат O = P × V<br/>Выход: NVFP4 или BF16"]
+            S3 --> S3a
+        end
+        
+        subgraph Output["ВЫХОД"]
+            O1["Тензор O (NVFP4/BF16)<br/>Готов для следующего слоя"]
+        end
+        
+        I1 --> Stage1
+        I2 --> Stage1
+        I3 --> Stage3
+        I4 --> Stage2
+        
+        Stage1 --> Stage2
+        Stage2 --> Stage3
+        Stage3 --> Output
+        
+    end
+    
+    style AttnFP4 fill:#f8fafc,stroke:#16a34a,stroke-width:3px
+    
+    style Inputs fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
+    style Stage1 fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    style Stage2 fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+    style Stage3 fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    style Output fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    
+    style S1 fill:#fde68a,stroke:#d97706,stroke-width:2px
+    style S1a fill:#fef9c3,stroke:#ca8a04,stroke-width:1px
+    style S2 fill:#93c5fd,stroke:#2563eb,stroke-width:2px
+    style S2a fill:#fbcfe8,stroke:#db2777,stroke-width:2px
+    style S2b fill:#fbcfe8,stroke:#db2777,stroke-width:2px
+    style S2c fill:#bfdbfe,stroke:#2563eb,stroke-width:2px
+    style S3 fill:#fde68a,stroke:#d97706,stroke-width:2px
+    style S3a fill:#fef9c3,stroke:#ca8a04,stroke-width:1px
+    style O1 fill:#86efac,stroke:#16a34a,stroke-width:2px
+    
+    style I1 fill:#bae6fd,stroke:#0284c7,stroke-width:1px
+    style I2 fill:#bae6fd,stroke:#0284c7,stroke-width:1px
+    style I3 fill:#bae6fd,stroke:#0284c7,stroke-width:1px
+    style I4 fill:#bae6fd,stroke:#0284c7,stroke-width:1px
+```
+**Описание схемы:** Как одна макро-инструкция заменяет целый пайплайн операций и где именно происходит ускорение.
 
 ### 4.2. Инструкция 2: `WANV.QUANTIZE_FP4` (Аппаратное квантование в NVFP4)
 
@@ -500,6 +696,54 @@ DiT хороши для тензорных операций, но плохи д�
 2. **VLIW-бандлов** (несколько независимых операций за такт);
 3. **Конвейеризации** (Producer → Consumer → Epilogue).
 
+```mermaid
+graph TD
+    subgraph WARP_V_Arch["Архитектура WARP-V для WAN"]
+        
+        subgraph Producer["Producer Warp (NUMA-загрузка)"]
+            P1["NUMA-осведомлённая SRAM"]
+            P2["64-bit SIMD загрузка<br/>(4 элемента/такт)"]
+            P1 --> P2
+        end
+        
+        subgraph Consumer["Consumer Warp (VLIW-SIMD вычисления)"]
+            C1["Consumer Low<br/>(младшие 32 бита)"]
+            C2["Consumer High<br/>(старшие 32 бита)"]
+            C1 <-->|"Интерконнект"| C2
+        end
+        
+        subgraph Epilogue["Epilogue Warp (Softmax/Norm)"]
+            E1["ThriftAttention<br/>(гибридная точность)"]
+            E2["Attn-QAT<br/>(режим обучения)"]
+            E1 <-.->|"Выбор режима"| E2
+        end
+        
+        subgraph Control["Управление и синхронизация"]
+            K1["VLIW-компилятор"]
+            K2["WARP_SYNC<br/>(детерминированные барьеры)"]
+            K1 --> K2
+        end
+        
+        Producer -->|"Данные готовы<br/>(фиксированная латентность)"| Consumer
+        Consumer -->|"Результаты S = Q·Kᵀ<br/>(FP16)"| Epilogue
+        Epilogue -->|"Результаты O = P·V<br/>(NVFP4/BF16)"| Output["Запись в SRAM"]
+        
+        Control -.->|"Статическое планирование"| Producer
+        Control -.->|"Статическое планирование"| Consumer
+        Control -.->|"Статическое планирование"| Epilogue
+        
+    end
+    
+    style WARP_V_Arch fill:#f8fafc,stroke:#475569
+    style Producer fill:#dbeafe,stroke:#2563eb
+    style Consumer fill:#fef3c7,stroke:#d97706
+    style Epilogue fill:#dcfce7,stroke:#16a34a
+    style Control fill:#fce7f3,stroke:#db2777
+    style Output fill:#f3e8ff,stroke:#9333ea
+```
+
+**Описание схемы:** Как все компоненты взаимодействуют.
+
 ### 7.2. Архитектура тензорного ядра на WARP-V
 
 ```mermaid
@@ -523,6 +767,36 @@ graph TD
 ```
 
 **Описание схемы:** Тензорное ядро на WARP-V — это не единый аппаратный блок, а конвейер из четырёх VLIW-кластеров с разными ролями. **Producer** загружает блоки A и B из локальной SRAM через 64-битные SIMD-загрузки (4 элемента FP16/BF16 за такт). **Consumer Low** выполняет MAC-операции на младших 32 битах 64-битных регистров. **Consumer High** параллельно работает со старшими 32 битами. **Epilogue** аккумулирует результаты и записывает их в память. Все четыре кластера работают одновременно на разных блоках данных — это и есть Warp Specialization на макроуровне.
+
+```mermaid
+gantt
+    title Конвейер WARP-V: Producer → Consumer → Epilogue
+    dateFormat  s
+    axisFormat %S
+    
+    section Producer
+    Блок N (загрузка)    :p1, 0, 4s
+    Блок N+1 (загрузка)  :p2, after p1, 4s
+    Блок N+2 (загрузка)  :p3, after p2, 4s
+    Блок N+3 (загрузка)  :p4, after p3, 4s
+    
+    section Consumer Low
+    Блок N (MAC)    :c1, after p1, 8s
+    Блок N+1 (MAC)  :c2, after c1, 8s
+    Блок N+2 (MAC)  :c3, after c2, 8s
+    
+    section Consumer High
+    Блок N (MAC)    :ch1, after p1, 8s
+    Блок N+1 (MAC)  :ch2, after ch1, 8s
+    Блок N+2 (MAC)  :ch3, after ch2, 8s
+    
+    section Epilogue
+    Блок N (аккум.) :e1, after c1, 4s
+    Блок N+1 (аккум.) :e2, after e1, 4s
+    Блок N+2 (аккум.) :e3, after e2, 4s
+```
+
+**Описание схемы:** Как перекрываются загрузка, вычисления и запись — ключевое преимущество Warp Specialization.
 
 ### 7.3. Три уровня параллелизма
 
@@ -636,6 +910,38 @@ graph TD
 >
 > **Финальная цель:** Достичь >50% производительности NVIDIA Tensor Cores при 3–5× лучшей энергоэффективности для WAN.
 
+```mermaid
+graph TD
+    subgraph Evolution["Эволюция GEMM-производительности WARP-V (MAC/такт)"]
+        
+        A["Базовый WARP-V<br/>(4 кластера)<br/>96 MAC/такт"] -->|"Фаза 1: Микро-архитектура<br/>(3-6 мес)"| B
+        
+        B["SIMD 8-bit + VLIW 8-issue<br/>256 MAC/такт<br/>(2.67×)"] -->|"Фаза 2: Архитектурные инновации<br/>(6-12 мес)"| C
+        
+        C["MAC-блоки + Tensor Cache + Sparse<br/>512 MAC/такт<br/>(5.3×)"] -->|"Фаза 3: Параллелизация<br/>(12-24 мес)"| D
+        
+        D["Мульти-кластер (8 шт.) +<br/>Tensor Chaining<br/>2048 MAC/такт<br/>(21.3×)"]
+        
+    end
+    
+    subgraph Competitors["Сравнение с конкурентами"]
+        E["NVIDIA H100<br/>(Tensor Core)<br/>8192 MAC/такт"]
+        F["TPU v4<br/>(Systolic Array)<br/>4096 MAC/такт"]
+        G["WARP-V (финал)<br/>2048 MAC/такт"]
+        G -->|"25% от H100<br/>при 5× энергии"| H["🏆 Победа в энергоэфф."]
+    end
+    
+    style A fill:#f3f4f6,stroke:#9ca3af
+    style B fill:#dbeafe,stroke:#2563eb
+    style C fill:#fef3c7,stroke:#d97706
+    style D fill:#dcfce7,stroke:#16a34a,stroke-width:3px
+    style E fill:#fee2e2,stroke:#dc2626
+    style F fill:#fef3c7,stroke:#d97706
+    style G fill:#dcfce7,stroke:#16a34a
+    style H fill:#fef3c7,stroke:#d97706,stroke-width:2px
+```
+**Описание схемы:** Поэтапный рост производительности и сравнение с конкурентами
+
 Это и есть путь к превосходству над NVIDIA для сверх-больших LLM и генерации видео на WARP-V. 🚀
 
 ---
@@ -696,6 +1002,52 @@ WARP-V подходит к проблеме с другой стороны: вм
 - **Масштабируемость:** Добавление NUMA-узлов линейно увеличивает производительность, в отличие от сложных кластеров NVIDIA.
 
 **Главное преимущество WARP-V для 4K видео в том, что она переносит фокус с «пиковой производительности» на «эффективность работы с памятью»**. Именно это и требуется для генерации сверхвысокого разрешения.
+
+```mermaid
+graph TD
+    subgraph Resolution["СРАВНЕНИЕ ТРЕБОВАНИЙ ПО РАЗРЕШЕНИЮ"]
+        
+        subgraph HD["1080p (2K)"]
+            H1["Токенов: ~25,000"]
+            H2["Размер матрицы: 25K×5120"]
+            H3["Память: ~8 ГБ"]
+            H4["Attention: ~6×10⁸ опер."]
+        end
+        
+        subgraph UHD["4K (2160p)"]
+            U1["Токенов: ~100,000-250,000"]
+            U2["Размер матрицы: 250K×5120"]
+            U3["Память: ~32-80 ГБ"]
+            U4["Attention: ~6×10¹⁰ опер."]
+        end
+        
+        HD -->|"4-10× больше"| UHD
+        
+        H1 -.-> U1
+        H2 -.-> U2
+        H3 -.-> U3
+        H4 -.-> U4
+        
+    end
+    
+    subgraph Issue["ПРОБЛЕМА"]
+        I1["Одна 4K-матрица 250K×5120"]
+        I2["Невозможно загрузить в один GPU"]
+        I3["Требуется распределение по 8 GPU"]
+        I4["→ Недетерминизм + пересылки"]
+    end
+    
+    UHD --> Issue
+    
+    style HD fill:#dbeafe,stroke:#2563eb
+    style UHD fill:#fee2e2,stroke:#dc2626
+    style Issue fill:#fee2e2,stroke:#dc2626
+    style I1 fill:#fee2e2,stroke:#dc2626
+    style I2 fill:#fee2e2,stroke:#dc2626
+    style I3 fill:#fee2e2,stroke:#dc2626
+    style I4 fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+```
+**Описание схемы:** Сравнение требований к памяти и вычислениям для 1080p и 4K видео. При переходе на 4K количество токенов растёт в 4-10 раз (до 250K), размер матрицы достигает 250K×5120, требуемая память — 32-80 ГБ, а сложность Attention — 6×10¹⁰ операций. Это невозможно загрузить в один GPU, требуется распределение по 8 GPU, что создаёт недетерминизм и дополнительные пересылки данных.
 
 ---
 
@@ -785,6 +1137,109 @@ WAN генерирует видео с длинными последовател
 3. **Общее время:** Суммарно WARP-V генерирует 5-секундное 720p видео за **20.5 сек вместо 36.2 сек** — ускорение **1.8×**.
 
 4. **Энергопотребление:** Самое впечатляющее преимущество — **7.8× лучшая энергоэффективность** (280 Вт·с вместо 2,200 Вт·с). Это означает, что WARP-V может генерировать видео на потребительском железе с воздушным охлаждением, тогда как NVIDIA требует серверного питания.
+
+```mermaid
+graph TD
+    subgraph Energy["ЭНЕРГОПОТРЕБЛЕНИЕ ПО КОМПОНЕНТАМ (5 сек 720p)"]
+        
+        subgraph H100["NVIDIA H100 — 2200 Вт·с"]
+            H1["Перемещение данных (HBM)<br/>~70% = 1540 Вт·с"]
+            H2["Вычисления (Tensor Cores)<br/>~20% = 440 Вт·с"]
+            H3["Управление (планировщик)<br/>~10% = 220 Вт·с"]
+        end
+        
+        subgraph WARPV["WARP-V — 280 Вт·с"]
+            W1["Перемещение данных (SRAM)<br/>~20% = 56 Вт·с"]
+            W2["Вычисления (VLIW-SIMD)<br/>~65% = 182 Вт·с"]
+            W3["Управление (статическое)<br/>~15% = 42 Вт·с"]
+        end
+        
+        H1 -->|"❌ 27.5× больше"| W1
+        H2 -->|"❌ 2.4× больше"| W2
+        H3 -->|"❌ 5.2× больше"| W3
+        
+    end
+    
+    style H100 fill:#fee2e2,stroke:#dc2626
+    style WARPV fill:#dcfce7,stroke:#16a34a
+    style H1 fill:#fee2e2,stroke:#dc2626
+    style H2 fill:#fef3c7,stroke:#d97706
+    style H3 fill:#fef3c7,stroke:#d97706
+    style W1 fill:#dbeafe,stroke:#2563eb
+    style W2 fill:#dcfce7,stroke:#16a34a
+    style W3 fill:#dbeafe,stroke:#2563eb
+```
+**Описание схемы:** Детальный разбор энергопотребления по компонентам. В NVIDIA H100 70% энергии (1540 Вт·с) уходит на перемещение данных между чипом и HBM. В **WARP-V** перемещение данных по локальной SRAM составляет лишь 20% (56 Вт·с) — в 27.5 раз меньше. Вычисления в **WARP-V** занимают 65% энергии (182 Вт·с) против 20% в H100 — это означает, что **WARP-V** тратит энергию именно на вычисления, а не на ожидание данных. Управление в WARP-V статическое и потребляет в 5.2 раза меньше энергии, чем динамический планировщик NVIDIA.
+
+```mermaid
+graph TD
+    subgraph Latency["⏱️ ЛАТЕНТНОСТЬ (batch=1)"]
+        L1["NVIDIA H100: 80 мс"]
+        L1a["❌ Медленно"]
+        L2["WARP-V: 35 мс"]
+        L2a["✅ 2.3× быстрее"]
+        L1 --> L1a
+        L2 --> L2a
+    end
+
+    subgraph Energy["⚡ ЭНЕРГОПОТРЕБЛЕНИЕ (5 сек, 720p)"]
+        E1["NVIDIA H100: 2200 Вт·с"]
+        E1a["❌ 700-1000 Вт/карта"]
+        E2["WARP-V: 280 Вт·с"]
+        E2a["✅ 7.8× эффективнее"]
+        E1 --> E1a
+        E2 --> E2a
+    end
+
+    subgraph Attention["🎯 ATTENTION (seq=32K)"]
+        A1["NVIDIA H100: 45 мс"]
+        A1a["❌ HBM-зависимость"]
+        A2["WARP-V: 18 мс"]
+        A2a["✅ 2.5× быстрее"]
+        A1 --> A1a
+        A2 --> A2a
+    end
+
+    subgraph Determinism["🎯 ДЕТЕРМИНИЗМ"]
+        D1["NVIDIA H100: ±15% джиттер"]
+        D1a["❌ Нестабильный FPS"]
+        D2["WARP-V: 0% джиттер"]
+        D2a["✅ Стабильный FPS"]
+        D1 --> D1a
+        D2 --> D2a
+    end
+
+    Latency --> Energy
+    Energy --> Attention
+    Attention --> Determinism
+
+    style Latency fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+    style Energy fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    style Attention fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    style Determinism fill:#fce7f3,stroke:#db2777,stroke-width:2px
+
+    style L1 fill:#fee2e2,stroke:#dc2626
+    style L1a fill:#fee2e2,stroke:#dc2626
+    style L2 fill:#dcfce7,stroke:#16a34a
+    style L2a fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+
+    style E1 fill:#fee2e2,stroke:#dc2626
+    style E1a fill:#fee2e2,stroke:#dc2626
+    style E2 fill:#dcfce7,stroke:#16a34a
+    style E2a fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+
+    style A1 fill:#fee2e2,stroke:#dc2626
+    style A1a fill:#fee2e2,stroke:#dc2626
+    style A2 fill:#dcfce7,stroke:#16a34a
+    style A2a fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+
+    style D1 fill:#fee2e2,stroke:#dc2626
+    style D1a fill:#fee2e2,stroke:#dc2626
+    style D2 fill:#dcfce7,stroke:#16a34a
+    style D2a fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+```
+
+**Описание схемы:** Итоговая визуализация преимуществ.
 
 ### 11.3. Итоговая формула победы
 
