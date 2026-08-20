@@ -26,6 +26,9 @@
 
 ## 🧮 Оптимизация моделей Higgsfield (Wan) 
 - [⚡ **Тензорные ядра на базе WARP-V для ускорения WAN-сетей генерации видео**: полная стратегия NVFP4-ускорения](index.html#/diva/wan-video/warp-v-tensor-cores-wan-video-generation-acceleration)
+
+## 🧮 Оптимизация моделей Cursor
+
 <!--
 - [NNTile: Семантический майнинг и кластеризация паттернов](index.html#/docs/diva/models/airi/nntile-mining)
 - [NNTile: Синтез VLIW-ядра и симуляция в Accel-Sim](index.html#/docs/diva/models/airi/nntile-synthesis)
