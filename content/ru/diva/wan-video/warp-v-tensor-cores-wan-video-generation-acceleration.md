@@ -5,7 +5,7 @@
 > **Дата:** 19 августа 2026
 > **Категория:** Архитектура ускорителей, AI-инференс, генерация видео
 > **Теги:** **WARP-V**, WAN, NVFP4, FP4 Attention, тензорные ядра, VLIW, NUMA, Warp Specialization, MLIR, NNTile
-> **Связанные документы:** [Эпоха III: Векторно-тензорный VLIW](#) | [Эволюция VLIW → TPU](#)
+> **Связанные документы:** [Эпоха III: Векторно-тензорный VLIW](#/docs/blocks/warp-v-vliw-simt-evolutionary-accelerator) | [Эволюция VLIW → TPU](#/wiki/architecture/vliw-to-tpu-evolution)
 
 ---
 

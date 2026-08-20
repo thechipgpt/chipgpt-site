@@ -192,20 +192,20 @@ graph TB
     │   Cluster High         │   Cluster Low
     │   (Upper 32 bits)      │   (Lower 32 bits)
     │                        │
-    │  ┌──────────┐         │   ┌──────────┐
-    │  │ RF High  │         │   │  RF Low  │
-    │  │ 64×32bit │         │   │ 64×32bit │
-    │  └──────────┘         │   └──────────┘
-    │        │              │         │
-    │  ┌──────────┐         │   ┌──────────┐
-    │  │ ALU/MUL  │         │   │ ALU/MUL  │
-    │  │ 2×16simd │         │   │ 2×16simd │
-    │  └──────────         │   └──────────┘
-    │        │              │         │
-    │  ┌──────────┐         │   ┌──────────
-    │  │ LSU High │◄───────►│   │  LSU Low │
-    │  │  32-bit  │  32-bit │   │  32-bit  │
-    │  └──────────┘ channel │   └──────────
+    │  ┌──────────┐          │   ┌──────────┐
+    │  │ RF High  │          │   │  RF Low  │
+    │  │ 64×32bit │          │   │ 64×32bit │
+    │  └──────────┘          │   └──────────┘
+    │        │               │         │
+    │  ┌──────────┐          │   ┌──────────┐
+    │  │ ALU/MUL  │          │   │ ALU/MUL  │
+    │  │ 2×16simd │          │   │ 2×16simd │
+    │  └──────────           │   └──────────┘
+    │        │               │         │
+    │  ┌──────────┐          │   ┌──────────┐
+    │  │ LSU High │◄────────►│   │  LSU Low │
+    │  │  32-bit  │  32-bit  │   │  32-bit  │
+    │  └──────────┘ channel  │   └──────────┘
     └────────────────────────┘
 ```
 
@@ -250,11 +250,11 @@ graph LR
 ```
 ┌─────────────────────────────────────────────────────────┐
 │             64-bit Register File (Logical)              │
-├──────────────────────┬──────────────────────────────────┤
-│   Register File High │    Register File Low             │
-│   64 registers × 32-bit  │    64 registers × 32-bit     │
-│   [63:32] bits       │    [31:0] bits                   │
-└──────────────────────┴──────────────────────────────────┘
+├─────────────────────────┬───────────────────────────────┤
+│   Register File High    │    Register File Low          │
+│   64 registers × 32-bit │    64 registers × 32-bit      │
+│   [63:32] bits          │    [31:0] bits                │
+└─────────────────────────┴───────────────────────────────┘
          │                           │
          │                           │
     Cluster High                Cluster Low
@@ -278,10 +278,10 @@ graph LR
 ├────────────────────────────────────────┤
 │  8 registers × 2-bit each              │
 │                                        │
-│  BR0: [1:0]   BR4: [1:0]              │
-│  BR1: [1:0]   BR5: [1:0]              │
-│  BR2: [1:0]   BR6: [1:0]              │
-│  BR3: [1:0]   BR7: [1:0]              │
+│  BR0: [1:0]   BR4: [1:0]               │
+│  BR1: [1:0]   BR5: [1:0]               │
+│  BR2: [1:0]   BR6: [1:0]               │
+│  BR3: [1:0]   BR7: [1:0]               │
 └────────────────────────────────────────┘
 ```
 
@@ -1132,7 +1132,7 @@ EDP_simd / EDP_scalar ≈ 0.35
 │    - All scalar instructions supported      │
 │    - Original binaries run unchanged        │
 │                                             │
-│ ⚠️  Compiler support required for:         │
+│ ⚠️  Compiler support required for:          │
 │    - Vector mode activation (bit 30)        │
 │    - SIMD instruction scheduling            │
 │    - Intercluster optimization              │
