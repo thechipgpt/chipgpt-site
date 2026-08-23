@@ -30,6 +30,8 @@
 ## 🧮 Оптимизация моделей Cursor
 - [⚡ **WARP-V-Multicore**: Усиление Warp Decode для MoE-инференса](index.html#/diva/cursor/warp-v-multicore-moe-warp-decode-optimization)
 
+## 🧮 Оптимизация моделей Kimi
+
 <!--
 - [NNTile: Семантический майнинг и кластеризация паттернов](index.html#/docs/diva/models/airi/nntile-mining)
 - [NNTile: Синтез VLIW-ядра и симуляция в Accel-Sim](index.html#/docs/diva/models/airi/nntile-synthesis)

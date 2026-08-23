@@ -52,6 +52,37 @@
 
 > **Ключевая проблема**: 5 этапов bookkeeping против 2 этапов полезных вычислений. При low-batch-инференсе (batch size = 1) эти накладные расходы становятся доминирующими.
 
+```mermaid
+graph LR
+    subgraph Traditional["Традиционный MoE пайплайн (8 этапов)"]
+        A["1. Сборка токенов<br/>по экспертам"] --> B["2. Padding"]
+        B --> C["3. Gate/Up<br/>GEMM"]
+        C --> D["4. Scatter"]
+        D --> E["5. Down<br/>GEMM"]
+        E --> F["6. Combine"]
+        F --> G["7. Удаление<br/>padding"]
+        G --> H["8. Запись<br/>результата"]
+    end
+
+    subgraph Legend["Легенда"]
+        L1["Bookkeeping (5 этапов)"]
+        L2["Полезные вычисления (2 этапа)"]
+        L3["Ввод-вывод (1 этап)"]
+    end
+
+    style A fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style B fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style C fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    style D fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style E fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    style F fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style G fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style H fill:#fef3c7,stroke:#d97706,stroke-width:2px
+    
+    style L1 fill:#fee2e2,stroke:#dc2626,stroke-width:2px
+    style L2 fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    style L3 fill:#fef3c7,stroke:#d97706,stroke-width:2px
+```
 ---
 
 ## 🧠 Пример bookkeeping в коде
@@ -129,6 +160,34 @@ Cursor предложил кардинально иной подход: **Warp D
 - **Точность:** 1.4× ближе к FP32 (за счёт отказа от MXFP8 и аккумуляции в FP32).
 - **Пропускная способность:** 3.95 TB/s (58% от пика B200 в 6.8 TB/s).
 - **Масштабируемость:** Варпы полностью независимы, что обеспечивает линейное масштабирование.
+
+```mermaid
+graph TD
+    subgraph ExpertCentric["Expert-Centric (Традиционный)"]
+        E1["Токены"] --> E2["Сборка по экспертам"]
+        E2 --> E3["Эксперт 1<br/>GEMM"]
+        E2 --> E4["Эксперт 2<br/>GEMM"]
+        E2 --> E5["Эксперт N<br/>GEMM"]
+        E3 --> E6["Combine"]
+        E4 --> E6
+        E5 --> E6
+        E6 --> E7["Результат"]
+    end
+
+    subgraph OutputCentric["Output-Centric (Warp Decode)"]
+        O1["Токен"] --> O2["Варп 1<br/>(нейрон 1)"]
+        O1 --> O3["Варп 2<br/>(нейрон 2)"]
+        O1 --> O4["Варп N<br/>(нейрон N)"]
+        O2 --> O5["Результат"]
+        O3 --> O5
+        O4 --> O5
+    end
+
+    ExpertCentric -->|"5 этапов bookkeeping"| OutputCentric
+    
+    style ExpertCentric fill:#fee2e2,stroke:#dc2626
+    style OutputCentric fill:#dcfce7,stroke:#16a34a
+```
 
 ### 1.3. Ограничения подхода Cursor
 
@@ -234,6 +293,23 @@ graph LR
 | **7** | **Warp Specialization** | Producer→Consumer→Epilogue конвейер | Перекрытие загрузки и вычислений |
 | **8** | **Линейное масштабирование** | Ускорение = N × 0.9 (до 128+ кластеров) | **2.4× лучше NVIDIA** |
 | **9** | **Энергоэффективность** | SRAM + статическое планирование | **7-20× лучше** |
+
+```mermaid
+graph TD
+    subgraph Formula["Формула победы WARP-V-Multicore"]
+        F1["Output-centric<br/>параллелизм"] --> Result["3-5× УСКОРЕНИЕ<br/>MoE-инференса"]
+        F2["SRAM вместо HBM<br/>(40-60× быстрее)"] --> Result
+        F3["Кластерная память<br/>(единое пространство)"] --> Result
+        F4["NUMA-осведомлённость<br/>(локальный доступ)"] --> Result
+        F5["Детерминизм<br/>(0% джиттер)"] --> Result
+        F6["SIMT-стек<br/>(0% divergence)"] --> Result
+        F7["Warp Specialization<br/>(Producer→Consumer→Epilogue)"] --> Result
+        F8["Линейное масштабирование<br/>(N × 0.9)"] --> Result
+        F9["Энергоэффективность<br/>(7-20× лучше)"] --> Result
+    end
+
+    style Result fill:#dcfce7,stroke:#16a34a,stroke-width:3px
+```
 
 #### 🧮 Итоговое уравнение
 
@@ -530,6 +606,31 @@ WARP_SYNC_REDUCE %dest, %src, %mask, REDUCE_OP_SUM
 | **Стоимость** | 5 тактов (внутри варпа) | **1 такт (внутри кластера)** |
 | **Масштабирование** | Только 32 потока | **Масштабируется до 1024+ лейнов** |
 
+```mermaid
+graph TD
+    subgraph NVIDIA["NVIDIA __shfl_xor_sync"]
+        N1["Варп (32 потока)"] --> N2["Butterfly<br/>редукция"]
+        N2 --> N3["Результат<br/>(только внутри варпа)"]
+        N1 --> N4["❌ Недетерминизм"]
+        N1 --> N5["❌ Только FP32"]
+        N1 --> N6["❌ Только 32 потока"]
+    end
+
+    subgraph WARPV["WARP-V WARP_SYNC_REDUCE"]
+        W1["Кластер<br/>(8-16 лейнов)"] --> W2["Аппаратный<br/>редуктор"]
+        W2 --> W3["Результат<br/>(внутри кластера)"]
+        W1 --> W4["✅ Детерминизм"]
+        W1 --> W5["✅ Все типы данных"]
+        W1 --> W6["✅ Масштабируется до 1024+"]
+        
+        W3 --> W7["NUMA-интерконнект"]
+        W7 --> W8["Результат<br/>(между кластерами)"]
+    end
+
+    style NVIDIA fill:#fee2e2,stroke:#dc2626
+    style WARPV fill:#dcfce7,stroke:#16a34a
+```
+
 ---
 
 ## 6. Почему VLIW лучше SIMT для GEMM
@@ -545,6 +646,34 @@ WARP_SYNC_REDUCE %dest, %src, %mask, REDUCE_OP_SUM
 | **Ветвления** | Спасает от хаоса (нужно для if/else) | Хаос убивает (для GEMM не нужен) |
 | **Утилизация** | ~60% (ждем данные) | >90% (данные уже здесь) |
 | **Энергия** | Тратится на "метания" и планирование | Тратится только на полезную работу |
+
+```mermaid
+graph LR
+    subgraph VLIW["VLIW (Конвейер на фабрике)"]
+        V1["📦 Деталь A"] --> V2["🔧 Станок 1"]
+        V1 --> V3["🔧 Станок 2"]
+        V1 --> V4["🔧 Станок 3"]
+        V2 --> V5["✅ Готовая<br/>деталь"]
+        V3 --> V5
+        V4 --> V5
+        V6["📋 Инженер<br/>(компилятор)"] -.-> V2
+        V6 -.-> V3
+        V6 -.-> V4
+    end
+
+    subgraph SIMT["SIMT (Диспетчер такси)"]
+        S1["🚗 Водитель 1"] --> S2["📍 Адрес A"]
+        S1 --> S3["📍 Адрес B"]
+        S1 --> S4["📍 Адрес C"]
+        S2 --> S5["❌ Пробка<br/>(ожидание)"]
+        S3 --> S5
+        S4 --> S5
+        S6["📱 Диспетчер<br/>(планировщик)"] -.-> S1
+    end
+
+    style VLIW fill:#dcfce7,stroke:#16a34a
+    style SIMT fill:#fee2e2,stroke:#dc2626
+```
 
 ### 6.2. Ключевые различия
 
@@ -612,11 +741,32 @@ NVIDIA ввела в архитектуру Blackwell специализиров
 | **Назначение** | Хранение весов моделей и промежуточных результатов |
 | **Аналог в VLIW** | Tile-Centric подход (SRAM вместо HBM) |
 
-> **Цитата из файла:** *"TMEM ... является шагом в сторону Tile-Centric подхода, характерного для VLIW-ускорителей."*
+> **Цитата:** *"TMEM ... является шагом в сторону Tile-Centric подхода, характерного для VLIW-ускорителей."*
 
 ### 8.2. 5-е поколение Tensor Cores
 
 Пятое поколение Tensor Cores в Blackwell начали отходить от строгой синхронности варпов, характерной для предыдущих поколений. Это позволяет лучше справляться с некоторыми видами нерегулярности.
+
+```mermaid
+graph TD
+    subgraph Blackwell["NVIDIA Blackwell (SIMT + TMEM)"]
+        B1["Tensor Cores<br/>(вычисления)"] --> B2["TMEM<br/>(256KB SRAM)"]
+        B2 --> B3["HBM3E<br/>(внешняя память)"]
+        B4["Warp Scheduler<br/>(динамический)"] -.-> B1
+        B4 -.-> B2
+    end
+
+    subgraph WARPV_Ref["WARP-V (VLIW + SRAM)"]
+        W1["VLIW-кластеры<br/>(вычисления)"] --> W2["SRAM<br/>(локальная)"]
+        W3["MLIR-компилятор<br/>(статический)"] -.-> W1
+        W3 -.-> W2
+    end
+
+    Blackwell -->|"TMEM — шаг к VLIW,<br/>но SIMT остаётся"| WARPV_Ref
+
+    style Blackwell fill:#fef3c7,stroke:#d97706
+    style WARPV_Ref fill:#dcfce7,stroke:#16a34a
+```
 
 ### 8.3. Почему этого недостаточно
 
@@ -633,6 +783,29 @@ NVIDIA ввела в архитектуру Blackwell специализиров
 ## 9. Четкий водораздел: Prefill vs Decode
 
 Важно четко разделять задачи Prefill и Decode, так как они имеют принципиально разные характеристики и требуют разных подходов к оптимизации.
+
+```mermaid
+graph TD
+    subgraph Prefill["Prefill (Sparse Attention)"]
+        P1["Длинный промпт<br/>(>32K токенов)"] --> P2["XYL_ENGINE<br/>(аппаратный gather)"]
+        P2 --> P3["SPARSE_COMBINED<br/>(PTS → MMA → VAR)"]
+        P3 --> P4["✅ Ускорение O(N²) → O(N·k)"]
+        P1 -.-> P5["NUMA-распределение K, V"]
+    end
+
+    subgraph Decode["Decode (Warp Decode)"]
+        D1["Авторегрессивная<br/>генерация"] --> D2["WARP_V_MULTICORE<br/>(output-centric)"]
+        D2 --> D3["WANV.MOE_GATE_UP<br/>+ WANV.MOE_DOWN"]
+        D3 --> D4["✅ Ускорение 3-5×<br/>+ 0% джиттер"]
+        D2 -.-> D5["Кластерная SRAM<br/>(~5 нс)"]
+        D2 -.-> D6["SIMT-стек<br/>(0% divergence)"]
+    end
+
+    Prefill -->|"Разные задачи"| Decode
+    
+    style Prefill fill:#dbeafe,stroke:#2563eb
+    style Decode fill:#dcfce7,stroke:#16a34a
+```
 
 | Аспект | **Prefill** (Sparse Attention) | **Decode** (Warp Decode) |
 |:---|:---|:---|
@@ -668,6 +841,27 @@ Cursor показал, что Warp Decode работает на программ
 
 Сочетание output-centric параллелизма, кластерной SRAM, гибридного разделения VLIW/RISC и статического MLIR-планирования создает архитектуру, которая не просто догоняет NVIDIA или Etched, а формирует новый стандарт для MoE-инференса и генеративного AI, где предсказуемость и энергоэффективность выходят на первый план.
 
+```mermaid
+graph LR
+    subgraph Cursor["Cursor Warp Decode (NVIDIA B200)"]
+        C1["Программная<br/>оптимизация"] --> C2["1.84× ускорение"]
+        C2 --> C3["❌ HBM-зависимость"]
+        C2 --> C4["❌ ±15% джиттер"]
+        C2 --> C5["❌ 58% утилизации"]
+    end
+
+    subgraph WARPV_Final["WARP-V-Multicore Warp Decode"]
+        W1["Аппаратная<br/>оптимизация"] --> W2["3-5× ускорение"]
+        W2 --> W3["✅ SRAM (40-60× быстрее)"]
+        W2 --> W4["✅ 0% джиттер"]
+        W2 --> W5["✅ >90% утилизации"]
+    end
+
+    Cursor -->|"Усиление"| WARPV_Final
+    
+    style Cursor fill:#fef3c7,stroke:#d97706
+    style WARPV_Final fill:#dcfce7,stroke:#16a34a,stroke-width:3px
+```
 ---
 
 ## 📚 References
