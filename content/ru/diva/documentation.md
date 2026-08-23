@@ -28,6 +28,7 @@
 - [⚡ **Тензорные ядра на базе WARP-V для ускорения WAN-сетей генерации видео**: полная стратегия NVFP4-ускорения](index.html#/diva/wan-video/warp-v-tensor-cores-wan-video-generation-acceleration)
 
 ## 🧮 Оптимизация моделей Cursor
+- [⚡ **WARP-V-Multicore**: Усиление Warp Decode для MoE-инференса](index.html#/diva/cursor/warp-v-multicore-moe-warp-decode-optimization)
 
 <!--
 - [NNTile: Семантический майнинг и кластеризация паттернов](index.html#/docs/diva/models/airi/nntile-mining)
