@@ -30,6 +30,9 @@
 ## 🧮 Оптимизация моделей Cursor
 - [⚡ **WARP-V-Multicore**: Усиление Warp Decode для MoE-инференса](index.html#/diva/cursor/warp-v-multicore-moe-warp-decode-optimization)
 
+## 🧮 Оптимизация моделей Minima
+- [⚡ **Minima-WARP-V**: Детерминированный SW/HW Конвейер для Аппаратного Сжатия Весов LLM и KV-Кэша](index.html#/diva/minima/minima-warp-v-sw-hw-co-design-kv-accelerator)
+
 ## 🧮 Оптимизация моделей Kimi
 
 <!--
